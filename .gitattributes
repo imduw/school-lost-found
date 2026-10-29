@@ -1,0 +1,10 @@
+# Dam bao script/hook luon giu line ending LF du checkout tren OS nao
+# (tranh loi "bad interpreter" tren Windows khi core.autocrlf=true)
+
+*.sh            text eol=lf
+.githooks/*     text eol=lf
+
+# File markdown / text thong thuong: giu nguyen, khong ep chieu
+*.md            text
+.gitignore      text eol=lf
+.gitattributes  text eol=lf
