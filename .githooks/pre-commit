@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# pre-commit hook
+# 1) Canh bao / chan commit thang vao main|master (tranh de code nhau khi team 5 nguoi)
+# 2) Chan commit neu con sot conflict marker chua xu ly
+# 3) Canh bao file qua lon
+
+branch=$(git symbolic-ref --short HEAD 2>/dev/null)
+protected_branches="main master"
+
+for p in $protected_branches; do
+  if [ "$branch" = "$p" ]; then
+    echo ""
+    echo "Ban dang commit truc tiep vao nhanh '$branch'."
+    echo "Voi team 5 nguoi, hay lam viec tren nhanh rieng de tranh de code:"
+    echo "  git checkout -b feature/ten-task"
+    echo ""
+    if [ -z "$ALLOW_MAIN_COMMIT" ]; then
+      echo "Neu chac chan muon commit thang vao '$branch', chay lai voi:"
+      echo "  ALLOW_MAIN_COMMIT=1 git commit ..."
+      echo ""
+      exit 1
+    else
+      echo "ALLOW_MAIN_COMMIT=1 duoc dat, cho phep commit vao '$branch'."
+      echo ""
+    fi
+  fi
+done
+
+# Kiem tra conflict marker trong cac file sap commit
+conflict_found=0
+for f in $(git diff --cached --name-only --diff-filter=ACM); do
+  if [ -f "$f" ] && grep -Eq '^(<<<<<<<|=======|>>>>>>>)' "$f" 2>/dev/null; then
+    echo "File con conflict marker chua xu ly: $f"
+    conflict_found=1
+  fi
+done
+if [ "$conflict_found" = "1" ]; then
+  echo ""
+  echo "Hay xu ly het conflict markers truoc khi commit."
+  exit 1
+fi
+
+# Canh bao file lon (>2MB)
+for f in $(git diff --cached --name-only --diff-filter=ACM); do
+  if [ -f "$f" ]; then
+    size=$(wc -c < "$f" 2>/dev/null || echo 0)
+    if [ "$size" -gt 2000000 ]; then
+      echo "Canh bao: file '$f' lon hon 2MB, can nhac co nen commit truc tiep khong."
+    fi
+  fi
+done
+
+exit 0

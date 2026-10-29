@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# commit-msg hook — kiểm tra format commit message
+# Format bắt buộc: [GiaiDoan] loai: mo ta (toi thieu 10 ky tu)
+# Giai đoạn hợp lệ: Init | Planning | Requirements | Design | Execution | Monitoring | Closing
+# Loại hợp lệ: feat | docs | fix | chore | refactor | test | wip
+
+commit_msg_file="$1"
+commit_msg=$(head -n1 "$commit_msg_file")
+
+pattern="^\[(Init|Planning|Requirements|Design|Execution|Monitoring|Closing)\] (feat|docs|fix|chore|refactor|test|wip)(\([a-zA-Z0-9_-]+\))?: .{10,}"
+
+if ! echo "$commit_msg" | grep -Eq "$pattern"; then
+  echo ""
+  echo "Commit message khong dung chuan."
+  echo ""
+  echo "Dinh dang yeu cau: [GiaiDoan] loai: mo ta (>=10 ky tu)"
+  echo "Giai doan hop le : Init | Planning | Requirements | Design | Execution | Monitoring | Closing"
+  echo "Loai hop le      : feat | docs | fix | chore | refactor | test | wip"
+  echo ""
+  echo "Vi du:"
+  echo "  [Planning] docs: bo sung WBS cho giai doan lap ke hoach"
+  echo "  [Requirements] docs(backlog): them user story dang tin that lac"
+  echo ""
+  echo "Message hien tai : $commit_msg"
+  echo ""
+  exit 1
+fi
+
+exit 0

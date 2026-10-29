@@ -1,0 +1,19 @@
+# CODEOWNERS - phan cong khu vuc phu trach theo giai doan / thu muc
+# Thay the @username ben duoi bang GitHub username that cua tung thanh vien.
+# Khi co Pull Request dong vao cac duong dan nay, GitHub se tu dong
+# request review tu nguoi phu trach tuong ung -> giam rui ro de code/doc cua nhau.
+
+# Mac dinh: toan bo repo can it nhat 1 nguoi review
+*                               @username-leader
+
+# Theo tung giai doan / tai lieu
+/docs/01-khoi-tao/              @username-a
+/docs/02-lap-ke-hoach/          @username-b
+/docs/03-yeu-cau/               @username-c
+/docs/04-thiet-ke/              @username-d
+/docs/05-giam-sat/              @username-e
+
+/meeting-notes/                 @username-leader
+
+/.githooks/                     @username-leader
+/.github/                       @username-leader

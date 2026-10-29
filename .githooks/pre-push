@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# pre-push hook
+# Chan push vao main|master neu local dang bi sau hon remote (tranh de commit cua dong doi)
+
+protected_branches="main master"
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  branch=$(echo "$remote_ref" | sed 's#refs/heads/##')
+
+  for p in $protected_branches; do
+    if [ "$branch" = "$p" ]; then
+      git fetch origin "$p" --quiet 2>/dev/null
+
+      behind=$(git rev-list --count HEAD.."origin/$p" 2>/dev/null)
+      behind=${behind:-0}
+
+      if [ "$behind" -gt 0 ]; then
+        echo ""
+        echo "Nhanh '$p' tren remote dang co $behind commit moi hon ban local cua ban."
+        echo "Push luc nay co the de mat thay doi cua dong doi."
+        echo ""
+        echo "Hay chay truoc khi push:"
+        echo "  git pull --rebase origin $p"
+        echo ""
+        exit 1
+      fi
+    fi
+  done
+done
+
+exit 0
