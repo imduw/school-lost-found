@@ -1,0 +1,51 @@
+{
+  "observed_date_utc7": "2026-11-01",
+  "record_prepared_date_utc7": "2026-11-02",
+  "scope": "Summary transcribed from the public REST API tool results and selected repository file reads in the 2026-11-01 conversation; temporary raw responses did not persist. Board observations come only from the user screenshot.",
+  "repository": "https://github.com/imduw/school-lost-found",
+  "visibility": "public",
+  "default_branch": "main",
+  "head_sha": "18c4718b6ab3125702e3d74f0b37257a4f099a24",
+  "api_sources": [
+    "https://api.github.com/repos/imduw/school-lost-found",
+    "https://api.github.com/repos/imduw/school-lost-found/git/trees/main?recursive=1",
+    "https://api.github.com/repos/imduw/school-lost-found/issues?state=all&per_page=100",
+    "https://api.github.com/repos/imduw/school-lost-found/milestones?state=all&per_page=100",
+    "https://api.github.com/repos/imduw/school-lost-found/commits?per_page=10",
+    "https://api.github.com/repos/imduw/school-lost-found/branches",
+    "https://api.github.com/repos/imduw/school-lost-found/actions/workflows"
+  ],
+  "issues_and_prs_returned_count": 0,
+  "milestones_returned_count": 0,
+  "workflows_total_count": 0,
+  "main_protected": false,
+  "commits_returned_count": 5,
+  "commit_shas_observed": [
+    "18c4718b6ab3125702e3d74f0b37257a4f099a24",
+    "39670b1f7df803f380c71484e043532f4530e8e8",
+    "e2cb6a95a45dd77d0b7a854f33244d74b1db3653",
+    "87097e448be1f8b358698e2d3c3ce6378952dfe8",
+    "65bec88925e731574d488719dab88eb322c05a54"
+  ],
+  "tree_truncated": false,
+  "selected_paths_observed": [
+    "AGENTS.md",
+    "README.md",
+    "CONTRIBUTING.md",
+    ".github/CODEOWNERS",
+    ".github/ISSUE_TEMPLATE/task.md",
+    ".github/pull_request_template.md",
+    ".githooks/commit-msg",
+    ".githooks/pre-commit",
+    ".githooks/pre-push",
+    "setup-hooks.sh",
+    "docs/02-lap-ke-hoach/wbs.md",
+    "docs/01-khoi-tao/.gitkeep",
+    "docs/03-yeu-cau/.gitkeep",
+    "docs/04-thiet-ke/.gitkeep",
+    "docs/05-giam-sat/.gitkeep",
+    "meeting-notes/.gitkeep"
+  ],
+  "codeowners_observed": "*    @dxhai17 @username-b @username-c @username-d @username-e",
+  "notes": "Snapshot, not live settings. No remote changes were made. This file is a summary of tool responses, not a replacement for GitHub evidence of future sprint execution."
+}
