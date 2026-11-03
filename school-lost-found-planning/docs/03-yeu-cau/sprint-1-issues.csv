@@ -1,0 +1,45 @@
+﻿plan_id,title,owner_role,reviewer_role,estimate_hours,due_date,wbs,sprint,suggested_status,dependencies,deliverable,acceptance_criteria,github_issue_url,owner_username,reviewer_username
+LF-01,"[LF-01] Chốt phạm vi, phân vai, stakeholder và tạo Drive",TV1,TV5,4,2026-11-03,1.1,S1,Todo,,"Biên bản kickoff, danh sách thành viên/giờ rảnh, nguồn nhu cầu, thư mục Drive và lịch hẹn PO/GV.","Nhận vai trò theo kỹ năng thật; cả nhóm đọc phạm vi MVP rút gọn và ghi điểm chưa thống nhất.
+Có trao đổi/nguồn nhu cầu thực tế; xác định người sẽ ký Charter và đặt lịch, không tự gán người đã đồng ý.
+Drive chia 5 thư mục báo cáo, Anyone with the link / Viewer; TV5 thử mở không đăng nhập.
+Ghi giờ rảnh thật và hạn trước 16/11; nói rõ với thầy khoảng trống lịch sử học kỳ nếu chưa đủ bằng chứng.",https://github.com/imduw/school-lost-found/issues/1,doanvanchi3n,phamvietnamson
+LF-02,[LF-02] Hoàn thiện BC1/M1 và thu chữ ký thật,TV1,TV2,6,2026-11-05,1.1,S1,Backlog,LF-01,"M1 đủ 13 mục, stakeholder matrix, bản đúng phiên bản có chữ ký PO/Stakeholder và GV trên Drive.","Điền thông tin thật của nhóm, scope rút gọn và hạn bàn giao 15/11.
+Reviewer kiểm tra tính khả thi; PO/Stakeholder và GV ký theo hình thức được chấp nhận, nhóm trưởng ký phần template.
+Thiếu chữ ký thì giữ In Review/blocked và hẹn lại; PR approval không thay chữ ký.
+Bản đã ký đúng nội dung được chốt, mở được ở thư mục BC1.",,doanvanchi3n,imduw
+LF-05,"[LF-05] Chốt stack, cấu trúc source và quy trình GitHub",TV2,TV3,5,2026-11-03,1.2,S1,Todo,,"Quyết định công nghệ ngắn, hợp đồng dữ liệu/API bản đầu, repo/quyền/board sẵn sàng.","Chọn stack nhóm từng dùng; thử đọc/ghi dữ liệu và ghi cách chạy; không dành nhiều ngày học framework mới.
+Chốt cấu trúc dữ liệu/endpoint đủ để TV3/TV4 làm song song; gửi hợp đồng trước khi kết thúc ngày 03/11.
+Repo và Project cấp đúng quyền; CODEOWNERS thay tên mẫu; PR có người khác review.
+Board dùng Backlog / Todo / In Progress / In Review / Done; chỉ đưa 5 việc khởi động vào Todo, đặt owner/reviewer/hạn.",https://github.com/imduw/school-lost-found/issues/2,imduw,dxhai17
+LF-06,"[LF-06] Hoàn thiện BC2: WBS, Dictionary và baseline 2 tuần",TV2,TV1,3,2026-11-04,1.2,S1,Backlog,LF-01; LF-05; LF-17,"M2/WBS được nhóm review, toàn bộ việc nối WBS, snapshot board/baseline đúng ngày.","WBS bao phủ MVP và đủ 5 báo cáo, deployment/Drive/chữ ký; work package 1–2 tuần.
+Tổng giờ từ issue khớp dictionary, có owner/dependency/AC, không cộng trùng.
+Điều chỉnh estimate theo kỹ năng thật sau spike; không xem 119 giờ đề xuất là cam kết trước khi nhóm xác nhận.
+Lưu baseline đúng thời điểm, cập nhật M1/backlog nếu scope khác; chữ ký Charter thiếu vẫn được ghi rõ.",,imduw,doanvanchi3n
+LF-07,[LF-07] Thiết lập CI và bản HTTPS đầu tiên,TV2,TV3,8,2026-11-07,2.2,S1,Backlog,LF-05; LF-10; LF-11,"URL HTTPS thật, CI trên PR, cấu hình môi trường, bản app/API/CSDL đầu tiên.","Lệnh CI phù hợp stack thực sự chạy; không dùng test giả luôn pass.
+Ngày 07/11 deploy app nền/API và dữ liệu; phối hợp TV4 dùng UI tối thiểu đang làm ở LF-14, kiểm tra luồng đủ ở LF-18 ngày 08/11.
+HTTPS truy cập từ ngoài máy tác giả, dữ liệu tồn tại sau tải lại; không trỏ API về localhost.
+README/env example không secret, có log/run/commit; nếu deploy thất bại giữ blocker, không tuyên bố gate đạt.",,imduw,dxhai17
+LF-10,"[LF-10] Mô hình dữ liệu, seed và đăng nhập tài khoản thử",TV3,TV2,8,2026-11-05,2.1,S1,Todo,LF-05,"Schema/migration, seed, đăng nhập/đăng xuất và kiểm tra quyền server.","Bắt đầu ngay ngày 02/11 bằng model User/Post/Claim trên giấy; code theo stack sau LF-05, không cần ngồi chờ.
+Có tài khoản user và moderator thử; đăng nhập đúng/sai, đăng xuất, gọi API không có quyền được kiểm tra.
+Không tự xây cơ chế mật khẩu thiếu an toàn; dùng cơ chế/thư viện phù hợp stack.
+Người khác khởi tạo dữ liệu thử theo hướng dẫn; PR nối với test/requirement.",https://github.com/imduw/school-lost-found/issues/3,dxhai17,imduw
+LF-11,"[LF-11] API đăng tin, xem/sửa tin và tìm kiếm tối thiểu",TV3,TV2,8,2026-11-07,3.1,S1,Backlog,LF-10; LF-17,"API tạo/xem/sửa tin và tìm kiếm từ khóa + loại tin + khu vực, có dữ liệu lưu.","Tin dùng loại lost/found, tiêu đề, mô tả, khu vực, ngày và trạng thái; MVP rút gọn không có upload ảnh.
+Tạo hợp lệ đọc lại được; thiếu trường bắt buộc bị từ chối; chỉ sửa tin mở của mình.
+Bộ lọc trả đúng dữ liệu, có kết quả rỗng; TV4 nhận request/response và lỗi mẫu.
+Có test server cho dữ liệu/quyền; gửi schema/API và kết quả thật cho TV1 dùng trong BC4.",,dxhai17,imduw
+LF-13,[LF-13] Wireframe và luồng màn hình tối thiểu,TV4,TV1,4,2026-11-04,3.1,S1,Todo,,"Wireframe login, list/search, detail, create/edit, claim và màn hình moderator đơn giản.","Đọc scope M1 trước, đánh dấu màn hình Sprint 1 và phần Sprint 2.
+Không thêm chat, AI, bản đồ, upload ảnh hay dashboard nâng cao.
+Nêu trạng thái lỗi/rỗng/chờ xử lý và thông tin đối chiếu riêng.
+TV1/TV3 review theo nghiệp vụ và model; gửi link/ảnh cho cả nhóm.",https://github.com/imduw/school-lost-found/issues/4,trangniii,doanvanchi3n
+LF-14,[LF-14] Giao diện đăng tin/tìm kiếm nối API thật,TV4,TV5,8,2026-11-08,3.1,S1,Backlog,LF-11; LF-13,"UI login, tạo/sửa/xem tin và tìm kiếm từ dữ liệu thật; bản tối thiểu hỗ trợ deploy ngày 07/11.","Dựng UI bằng hợp đồng/mock từ 04/11; mock ghi rõ và phải thay bằng API thật trước nghiệm thu.
+Luồng login → tạo tin → tải lại → tìm/xem tin chạy được trên bản HTTPS của LF-07.
+Hiển thị validation/loading/empty/error; người thường không có nút/thao tác quản trị, server vẫn kiểm tra quyền.
+Kiểm tra desktop và mobile giả lập; gửi ảnh/luồng UI cùng link PR cho BC4.",,trangniii,phamvietnamson
+LF-17,"[LF-17] Tiêu chí nghiệm thu, test plan và risk baseline",TV5,TV3,4,2026-11-04,1.3.1,S1,Todo,,"AC/test theo MVP rút gọn, risk register và 3-Step Matrix ban đầu đầy đủ.","Bắt đầu đọc M1/backlog ngay, rà lại sau quyết định scope/stack 03/11.
+Có test dương/âm về auth, quyền, tin, claim/trả và HTTPS/Drive; chưa chạy thì Not run.
+Register có owner/trigger/response và matrix; phân biệt dự kiến với kết quả đã thực hiện.
+Lưu baseline đúng ngày; bố trí thu evidence từ bây giờ, không đợi cuối kỳ.",https://github.com/imduw/school-lost-found/issues/5,phamvietnamson,dxhai17
+LF-18,"[LF-18] Kiểm tra Sprint 1, review/retro và Risk Update #1",TV5,TV1,8,2026-11-08,1.3.1,S1,Backlog,LF-07; LF-14; LF-17,"Test report, snapshot board, retro và risk update #1 sau Sprint 1 ngày 08/11.","Thử tạo/tìm tin và quyền trên HTTPS, ghi commit/môi trường/kết quả; nếu build chưa có thì ghi Blocked chứ không Pass.
+Ghi lỗi với bước tái hiện và owner; lỗi sản phẩm do TV2/TV3/TV4 sửa, TV5 retest.
+Review vẫn diễn ra nếu sprint chưa đạt; chỉ rõ việc dở, phụ thuộc và điều chỉnh Sprint 2.
+Risk update phản ánh quan sát thật; lưu phiên bản 1 và evidence, không chỉ đổi ngày baseline.",,phamvietnamson,doanvanchi3n
