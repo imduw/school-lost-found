@@ -1,5 +1,7 @@
 # Risk Register — School Lost & Found
 
+**Snapshot LF-17 v0.1 ghi ngày 05/11/2026 (UTC+7), chờ TV3 review.** Giữ 12 mục RSK01–RSK12 và 3-Step Matrix làm baseline đề xuất. Các điểm P×I, trigger và response dưới đây là đánh giá/kế hoạch. Mốc 03–04/11 đã qua tại thời điểm ghi snapshot, cần xác minh thực tế khi rà lại. LF-05 đã đóng trên GitHub, còn cần liên kết quyết định stack và bằng chứng smoke test trước khi đánh giá lại RSK02/RSK08. Xem [kế hoạch kiểm thử LF-17](../03-yeu-cau/LF-17-test-plan.md) để thu evidence theo ca. Kết quả phản ứng và thay đổi điểm sẽ được ghi vào log sau khi có nguồn kiểm chứng.
+
 **Baseline đề xuất:** khởi tạo 01/11, v0.3 cập nhật hạn trước 16/11 ngày 02/11/2026; chưa khóa. **Điều phối:** TV5; TV1 quyết định ảnh hưởng phạm vi/lịch.  
 Chưa có Sprint 1 đã thực thi. Bảng đầu là nhận diện ban đầu; không gọi đây là “Risk Update sau Sprint 1”.
 
