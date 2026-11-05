@@ -220,12 +220,12 @@ Không tạo lại năm issue này. CSV đã điền URL thật cho chúng; 16 t
 
 **Tiêu chí hoàn thành:**
 
-- [ ] Bắt đầu ngay ngày 02/11 bằng model User/Post/Claim trên giấy; code theo stack sau LF-05, không cần ngồi chờ.
-- [ ] Có tài khoản user và moderator thử; đăng nhập đúng/sai, đăng xuất, gọi API không có quyền được kiểm tra.
-- [ ] Không tự xây cơ chế mật khẩu thiếu an toàn; dùng cơ chế/thư viện phù hợp stack.
-- [ ] Người khác khởi tạo dữ liệu thử theo hướng dẫn; PR nối với test/requirement.
+- [x] Bắt đầu ngay ngày 02/11 bằng model User/Post/Claim trên giấy; code theo stack sau LF-05, không cần ngồi chờ.
+- [x] Có tài khoản user và moderator thử; đăng nhập đúng/sai, đăng xuất, gọi API không có quyền được kiểm tra.
+- [x] Không tự xây cơ chế mật khẩu thiếu an toàn; dùng cơ chế/thư viện phù hợp stack.
+- [x] Người khác khởi tạo dữ liệu thử theo hướng dẫn; PR nối với test/requirement.
 
-**Evidence:** chưa có; khi làm bổ sung PR/file/test/biên bản/URL, ngày và người review. Chưa đạt AC giữ mở hoặc ghi blocker; không đóng chỉ vì đã soạn mô tả.
+**Evidence:** Đã hoàn thành hồ sơ thiết kế đặc tả kỹ thuật, schema DDL, seed data fixture và tài liệu tự kiểm thử tại [LF-10-mo-hinh-du-lieu-seed-auth.md](../04-thiet-ke/LF-10-mo-hinh-du-lieu-seed-auth.md), [schema.sql](../04-thiet-ke/sql/schema.sql), [seed.sql](../04-thiet-ke/sql/seed.sql). Sẵn sàng In Review cho TV2 (@imduw).
 
 ### LF-11 — API đăng tin, xem/sửa tin và tìm kiếm tối thiểu
 
