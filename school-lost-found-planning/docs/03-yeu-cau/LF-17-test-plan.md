@@ -6,7 +6,7 @@ Baseline v0.1 ghi ngày **05/11/2026 (UTC+7)**, hạn giao 04/11. WBS 1.3.1, Spr
 
 ## Điều kiện chạy
 
-Dùng hai user A/B, một moderator M và một phiên chưa đăng nhập. Seed dữ liệu giả gồm tin lost và found của cả A/B, tin mở, ẩn, đã trả, đã giải quyết và tin found có hai claim pending từ hai người khác chủ tin. Dùng môi trường test có thể reset, ghi commit, URL, bản seed và trình duyệt. Kiểm tra quyền bằng request trực tiếp bên cạnh UI. Với ca âm, kiểm tra phản hồi bị từ chối, dữ liệu giữ nguyên và nội dung riêng không xuất hiện trong phản hồi.
+Dùng ba user thường A/B/C, một moderator M và một phiên chưa đăng nhập. Với fixture hai claim pending, B sở hữu tin found còn mở, A và C mỗi người có một claim pending. Seed dữ liệu giả gồm tin lost và found của cả A/B, tin mở, ẩn, đã trả, đã giải quyết và tin found có hai claim pending từ hai người khác chủ tin. Dùng môi trường test có thể reset, ghi commit, URL, bản seed và trình duyệt. Kiểm tra quyền bằng request trực tiếp bên cạnh UI. Với ca âm, kiểm tra phản hồi bị từ chối, dữ liệu giữ nguyên và nội dung riêng không xuất hiện trong phản hồi.
 
 ## Ca kiểm thử và kết quả mong đợi
 
