@@ -408,15 +408,20 @@ Tất cả mật khẩu thử nghiệm đều được hash bằng BCrypt cost f
 
 ## 6. Hướng dẫn khởi tạo và Tự kiểm thử (Runbook & Verification)
 
-### 6.1 Khởi tạo CSDL (Database Setup)
+### 6.1 Khởi tạo CSDL (Database Setup trên Supabase / PostgreSQL)
 Nhóm phát triển hoặc người kiểm thử có thể thực thi 2 file script SQL đính kèm:
-1. `docs/04-thiet-ke/sql/schema.sql`: Khởi tạo bảng, khóa chính, khóa ngoại, ràng buộc.
-2. `docs/04-thiet-ke/sql/seed.sql`: Nạp danh mục, tài khoản mẫu và các tin thử nghiệm.
+1. `docs/04-thiet-ke/sql/schema.sql` (hoặc `database/schema.sql`): Khởi tạo bảng, khóa chính, khóa ngoại, ràng buộc, function/trigger.
+2. `docs/04-thiet-ke/sql/seed.sql` (hoặc `database/seed.sql`): Nạp danh mục, tài khoản mẫu và các tin thử nghiệm.
 
-Lệnh thực thi mẫu trên MySQL:
+**Cách 1: Chạy trực tiếp trên Supabase Dashboard (Khuyên dùng)**
+- Truy cập Project Supabase -> Vào mục **SQL Editor** -> Mở tab mới.
+- Copy toàn bộ nội dung file `schema.sql` dán vào và bấm **Run**.
+- Tiếp tục copy nội dung file `seed.sql` dán vào và bấm **Run**.
+
+**Cách 2: Chạy qua công cụ dòng lệnh psql:**
 ```bash
-mysql -u root -p school_lost_found < school-lost-found-planning/docs/04-thiet-ke/sql/schema.sql
-mysql -u root -p school_lost_found < school-lost-found-planning/docs/04-thiet-ke/sql/seed.sql
+psql "postgresql://postgres:[YOUR-PASSWORD]@db.[YOUR-PROJECT-REF].supabase.co:5432/postgres" -f docs/04-thiet-ke/sql/schema.sql
+psql "postgresql://postgres:[YOUR-PASSWORD]@db.[YOUR-PROJECT-REF].supabase.co:5432/postgres" -f docs/04-thiet-ke/sql/seed.sql
 ```
 
 ### 6.2 Kịch bản tự kiểm tra (Smoke Test Scenarios)
