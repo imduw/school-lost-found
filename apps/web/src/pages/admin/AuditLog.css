@@ -1,0 +1,500 @@
+/* ==========================================================================
+   A04_Audit_Log — Authentic UX/UI Design
+   ========================================================================== */
+
+.a04-page-wrapper {
+  min-height: 100vh;
+  background-color: #FFFFFF;
+  color: #34443B;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.a04-body {
+  display: flex;
+  flex: 1;
+  background-color: #FAF8F5;
+}
+
+.a04-main {
+  flex: 1;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1200px;
+}
+
+/* Banner icon */
+.banner-audit-icon {
+  color: #2E7D32;
+}
+
+/* 4 Stat Cards row */
+.a04-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+/* 2 Column Main Layout */
+.a04-content-grid {
+  display: grid;
+  grid-template-columns: 68fr 32fr;
+  gap: 16px;
+  align-items: start;
+}
+
+/* Left Panel */
+.a04-left-panel {
+  background-color: #FFFFFF;
+  border: 1px solid #ECE7DE;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 4px rgba(52, 68, 59, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Filter Bar */
+.a04-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.a04-search-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border: 1px solid #DED8CC;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+}
+
+.a04-search-box input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 12.5px;
+  color: #233329;
+  background: transparent;
+}
+
+.a04-search-box input::placeholder {
+  color: #8B9E94;
+}
+
+.a04-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 11px;
+  border: 1px solid #DED8CC;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  color: #3E4D45;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.a04-dropdown-btn:hover {
+  border-color: #B5AD9F;
+  background-color: #FAF7F0;
+}
+
+.a04-refresh-btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #C8E6C9;
+  border-radius: 8px;
+  background-color: #F1F8F3;
+  color: #2E7D32;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.a04-refresh-btn:hover {
+  background-color: #E8F5E9;
+}
+
+/* Audit Table */
+.a04-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.a04-table th {
+  text-align: left;
+  padding: 10px 10px;
+  color: #7B8B82;
+  font-weight: 600;
+  font-size: 11.5px;
+  border-bottom: 1px solid #F0ECE4;
+}
+
+.a04-table td {
+  padding: 11px 10px;
+  border-bottom: 1px solid #F7F4EE;
+  vertical-align: middle;
+}
+
+.a04-table tr:hover {
+  background-color: #FCFBF9;
+}
+
+.a04-table tr.a04-row-selected {
+  background-color: #F0FAF2;
+}
+
+/* Row index icon */
+.a04-row-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.a04-row-icon-create { background-color: #E8F5E9; color: #2E7D32; }
+.a04-row-icon-lock   { background-color: #FFEBEE; color: #C62828; }
+.a04-row-icon-update { background-color: #E3F2FD; color: #1565C0; }
+.a04-row-icon-verify { background-color: #FFF8E1; color: #F57F17; }
+.a04-row-icon-edit   { background-color: #FFF3E0; color: #E65100; }
+
+.a04-idx-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #55685E;
+  font-weight: 500;
+}
+
+/* Time column */
+.a04-time-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.a04-date-txt {
+  font-size: 12px;
+  font-weight: 600;
+  color: #233329;
+}
+
+.a04-time-txt {
+  font-size: 11px;
+  color: #7B8B82;
+}
+
+/* Actor cell */
+.a04-actor-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.a04-actor-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #E2DCD2;
+  background-color: #E8F5E9;
+}
+
+.a04-actor-name {
+  font-weight: 600;
+  color: #233329;
+  font-size: 12.5px;
+}
+
+/* Role badges */
+.a04-role-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.role-admin-pill  { background-color: #F3E5F5; color: #7B1FA2; }
+.role-mod-pill    { background-color: #FFF3E0; color: #D48806; }
+
+/* Action column */
+.a04-action-txt {
+  font-weight: 600;
+  color: #34443B;
+  font-size: 12.5px;
+}
+
+/* Target column */
+.a04-target-txt {
+  color: #3E4D45;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Summary column */
+.a04-summary-txt {
+  color: #55685E;
+  font-size: 12px;
+  line-height: 1.4;
+  max-width: 180px;
+}
+
+/* View icon button */
+.a04-view-btn {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: #7B8B82;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.a04-view-btn:hover {
+  background-color: #F0ECE4;
+  color: #233329;
+}
+
+/* Pagination */
+.a04-pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  font-size: 12px;
+  color: #67786F;
+}
+
+.a04-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.a04-page-btn {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ECE7DE;
+  border-radius: 6px;
+  background-color: #FFFFFF;
+  color: #3E4D45;
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.a04-page-btn:hover {
+  border-color: #D48806;
+}
+
+.a04-page-btn.active {
+  background-color: #28543B;
+  border-color: #28543B;
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+.a04-page-ellipsis {
+  padding: 0 4px;
+  color: #8B9E94;
+}
+
+.a04-page-rows-select {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.a04-page-rows-select select {
+  padding: 3px 8px;
+  font-size: 12px;
+  color: #4A5850;
+  border: 1px solid #DED8CC;
+  border-radius: 6px;
+  background-color: #FFFFFF;
+  cursor: pointer;
+}
+
+/* ===================== RIGHT PANEL ===================== */
+.a04-right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.a04-detail-card {
+  background-color: #FFFFFF;
+  border: 1px solid #ECE7DE;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 4px rgba(52, 68, 59, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.a04-card-sec-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #233329;
+}
+
+.a04-card-sec-title svg {
+  color: #28543B;
+}
+
+/* Detail field rows */
+.a04-detail-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.a04-field-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.a04-field-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #67786F;
+  flex-shrink: 0;
+  min-width: 110px;
+}
+
+.a04-field-value {
+  font-weight: 600;
+  color: #233329;
+  text-align: right;
+}
+
+.a04-field-value-code {
+  font-weight: 600;
+  color: #233329;
+  font-variant-numeric: tabular-nums;
+  font-size: 11.5px;
+}
+
+/* Actor in detail */
+.a04-detail-actor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.a04-detail-actor-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #E2DCD2;
+}
+
+.a04-detail-actor-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+.a04-detail-actor-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #233329;
+  line-height: 1.1;
+}
+
+.a04-detail-actor-email {
+  font-size: 10.5px;
+  color: #7B8B82;
+}
+
+/* Divider */
+.a04-section-divider {
+  border: none;
+  border-top: 1px solid #F0ECE4;
+  margin: 2px 0;
+}
+
+/* Action info block */
+.a04-action-info-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #233329;
+}
+
+.a04-action-info-title svg {
+  color: #28543B;
+}
+
+.a04-action-detail-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.a04-action-detail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.a04-action-detail-label {
+  color: #67786F;
+  flex-shrink: 0;
+  min-width: 100px;
+}
+
+.a04-action-detail-value {
+  font-weight: 600;
+  color: #233329;
+}
+
+/* Full detail text */
+.a04-full-detail-box {
+  background-color: #F7F9F7;
+  border: 1px solid #E8EDE9;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #3E4D45;
+  line-height: 1.5;
+}
+

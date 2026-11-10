@@ -1,0 +1,399 @@
+/* ==========================================================================
+   M01_Staff_Dashboard — Authentic Cozy Campus UX/UI Design
+   ========================================================================== */
+
+.m01-dashboard-wrapper {
+  min-height: 100vh;
+  background-color: #FFFFFF;
+  color: #34443B;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.m01-body {
+  display: flex;
+  flex: 1;
+  background-color: #FAF8F5;
+}
+
+/* ---------------- Staff Role Pill in Header ---------------- */
+.m01-staff-role-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background-color: #F1F8F3;
+  border: 1px solid #C8E6C9;
+  border-radius: 20px;
+  color: #233329;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.m01-staff-role-pill .role-user-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: #E8F5E9;
+  color: #2E7D32;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------------- Main Content ---------------- */
+.m01-main {
+  flex: 1;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1200px;
+}
+
+/* Banner Icon in Green */
+.banner-staff-icon {
+  color: #28543B;
+}
+
+/* ---------------- 4 Stat Cards Row ---------------- */
+.m01-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.m01-stat-card {
+  background-color: #FFFFFF;
+  border: 1px solid #ECE7DE;
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 4px rgba(52, 68, 59, 0.03);
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.m01-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 68, 59, 0.06);
+}
+
+.m01-stat-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.m01-stat-arrow {
+  color: #B5AD9F;
+  flex-shrink: 0;
+}
+
+/* ---------------- Two Column Grids ---------------- */
+.m01-two-col-grid {
+  display: grid;
+  grid-template-columns: 58fr 42fr;
+  gap: 16px;
+  align-items: start;
+}
+
+/* Pending Tasks Card */
+.m01-tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.m01-task-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background-color: #FAF8F5;
+  border: 1px solid #EFEBE4;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.m01-task-item:hover {
+  background-color: #F3EFE8;
+}
+
+.m01-task-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.m01-task-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background-color: #E8F5E9;
+  color: #2E7D32;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.m01-task-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #233329;
+}
+
+.m01-task-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.m01-task-badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  background-color: #FFEBEE;
+  color: #C62828;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 18px;
+  text-align: center;
+}
+
+/* ---------------- Review Items List (Left Bottom) ---------------- */
+.m01-review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.m01-review-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background-color: #FAF8F5;
+  border: 1px solid #ECE7DE;
+  border-radius: 10px;
+  gap: 12px;
+}
+
+.m01-review-thumb {
+  width: 44px;
+  height: 32px;
+  border-radius: 6px;
+  object-fit: cover;
+  background-color: #F0EDE6;
+  border: 1px solid #ECE7DE;
+  flex-shrink: 0;
+}
+
+.m01-review-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.m01-review-headline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.m01-type-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.m01-type-found {
+  background-color: #E8F5E9;
+  color: #2E7D32;
+}
+
+.m01-type-lost {
+  background-color: #FFEBEE;
+  color: #C62828;
+}
+
+.m01-review-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #233329;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.m01-review-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 11.5px;
+  color: #67786F;
+}
+
+.m01-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.m01-review-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.m01-btn-approve {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  background-color: #FFFFFF;
+  border: 1px solid #C8E6C9;
+  border-radius: 6px;
+  color: #2E7D32;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.m01-btn-approve:hover {
+  background-color: #E8F5E9;
+}
+
+.m01-btn-reject {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  background-color: #FFFFFF;
+  border: 1px solid #FFA39E;
+  border-radius: 6px;
+  color: #CF1322;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.m01-btn-reject:hover {
+  background-color: #FFF1F0;
+}
+
+.m01-btn-more {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #67786F;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.m01-btn-more:hover {
+  background-color: #F0ECE4;
+  color: #233329;
+}
+
+/* ---------------- Claim Verification Cards (Right Bottom) ---------------- */
+.m01-claims-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.m01-claim-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background-color: #FAF8F5;
+  border: 1px solid #ECE7DE;
+  border-radius: 10px;
+  gap: 12px;
+}
+
+.m01-claim-thumb {
+  width: 44px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+  background-color: #F0EDE6;
+  border: 1px solid #ECE7DE;
+  flex-shrink: 0;
+}
+
+.m01-claim-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.m01-claim-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #233329;
+}
+
+.m01-claim-detail {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  color: #67786F;
+}
+
+.m01-claim-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.m01-claim-status-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10.5px;
+  font-weight: 700;
+  background-color: #FFF8E1;
+  color: #D48806;
+}
+
+.m01-btn-verify {
+  padding: 5px 12px;
+  background-color: #FFFFFF;
+  border: 1px solid #C8E6C9;
+  border-radius: 6px;
+  color: #2E7D32;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.m01-btn-verify:hover {
+  background-color: #E8F5E9;
+}
+
