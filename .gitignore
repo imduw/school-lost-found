@@ -3,6 +3,8 @@
 Thumbs.db
 .vscode/
 .idea/
+node_modules/
+.env
 
 # Temp
 *.tmp
