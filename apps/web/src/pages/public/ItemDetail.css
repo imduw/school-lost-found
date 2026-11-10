@@ -1,0 +1,444 @@
+/* ==========================================================================
+   P03_Item_Details — Authentic Cozy Campus UX/UI Design
+   ========================================================================== */
+
+.p03-page-wrapper {
+  min-height: 100vh;
+  background-color: #FAF8F5;
+  color: #34443B;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.p03-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 32px 48px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ---------------- Top Back Link ---------------- */
+.p03-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #55685E;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
+  width: fit-content;
+}
+
+.p03-back-link:hover {
+  color: #28543B;
+}
+
+/* ---------------- Main 2 Columns Layout ---------------- */
+.p03-content-grid {
+  display: grid;
+  grid-template-columns: 68fr 32fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* ---------------- Left Card: Item Details Main ---------------- */
+.p03-main-card {
+  background-color: #FFFFFF;
+  border: 1px solid #ECE7DE;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(52, 68, 59, 0.03);
+  display: grid;
+  grid-template-columns: 310px 1fr;
+  gap: 24px;
+}
+
+/* Left Sub-Column: Gallery */
+.p03-gallery-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.p03-main-photo-wrap {
+  position: relative;
+  width: 100%;
+  height: 230px;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #F8EFE3;
+  border: 1px solid #ECE7DE;
+}
+
+.p03-main-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.p03-expand-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #34443B;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+}
+
+.p03-thumbs-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.p03-sub-thumb {
+  flex: 1;
+  height: 48px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1.5px solid #ECE7DE;
+  background-color: #FAF8F5;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.p03-sub-thumb.active {
+  border-color: #28543B;
+}
+
+.p03-sub-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Right Sub-Column: Item Details Text */
+.p03-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.p03-badges-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.p03-badge-found-solid {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 12px;
+  background-color: #28543B;
+  color: #FFFFFF;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.p03-badge-open {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 12px;
+  background-color: #E8F5E9;
+  color: #2E7D32;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.p03-item-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1E382B;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.p03-meta-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: #55685E;
+}
+
+.p03-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.p03-meta-row svg {
+  color: #7B8B82;
+  flex-shrink: 0;
+}
+
+.p03-meta-bold-label {
+  font-weight: 600;
+  color: #34443B;
+}
+
+/* Description Section */
+.p03-desc-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 4px;
+}
+
+.p03-desc-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #233329;
+}
+
+.p03-desc-text {
+  font-size: 12.5px;
+  color: #55685E;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Custody Box (Nơi đang giữ đồ) */
+.p03-custody-card {
+  background-color: #F0FAF2;
+  border: 1px solid #C8E6C9;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.p03-custody-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.p03-custody-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background-color: #E8F5E9;
+  color: #2E7D32;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.p03-custody-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.p03-custody-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #2E7D32;
+}
+
+.p03-custody-val {
+  font-size: 12px;
+  font-weight: 500;
+  color: #233329;
+}
+
+.p03-btn-view-location {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border: 1px solid #C8E6C9;
+  border-radius: 16px;
+  background-color: #FFFFFF;
+  color: #2E7D32;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* ---------------- Right Column ---------------- */
+.p03-side-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Claim CTA Card */
+.p03-cta-card {
+  background: linear-gradient(135deg, #FFFDF9 0%, #FFF8ED 100%);
+  border: 1px solid #FFE0B2;
+  border-radius: 16px;
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  box-shadow: 0 1px 4px rgba(52, 68, 59, 0.03);
+}
+
+.p03-cta-mascot-img {
+  width: 100px;
+  height: 60px;
+  object-fit: contain;
+}
+
+.p03-cta-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1E382B;
+  margin: 0;
+}
+
+.p03-cta-desc {
+  font-size: 12px;
+  color: #67786F;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.p03-btn-send-claim {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #28543B;
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.15s ease;
+  margin-top: 4px;
+}
+
+.p03-btn-send-claim:hover {
+  background-color: #1F422F;
+}
+
+/* Poster Info Card */
+.p03-poster-card {
+  background-color: #FFFFFF;
+  border: 1px solid #ECE7DE;
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.p03-card-heading {
+  font-size: 13px;
+  font-weight: 700;
+  color: #233329;
+}
+
+.p03-poster-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.p03-poster-avatar-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #E8F5E9;
+  border: 1.5px solid #C8E6C9;
+  color: #2E7D32;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.p03-poster-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.p03-poster-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #233329;
+}
+
+.p03-poster-joined {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #7B8B82;
+}
+
+/* Report Violation Card */
+.p03-report-card {
+  background-color: #FFF5F2;
+  border: 1px solid #FCD4CB;
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #D64527;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+.p03-report-card:hover {
+  background-color: #FFEAE4;
+}
+
+/* ---------------- Bottom: Related Items ---------------- */
+.p03-related-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.p03-related-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.p03-related-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #1E382B;
+}
+
+.p03-related-title svg {
+  color: #D48806;
+}
+

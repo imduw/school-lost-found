@@ -1,0 +1,570 @@
+/* ==========================================================================
+   A03_Category_Management — Authentic UX/UI Design
+   ========================================================================== */
+
+.a03-page-wrapper {
+  min-height: 100vh;
+  background-color: #FFFFFF;
+  color: #34443B;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header & Sidebar reuse A01 classes from AdminDashboard.css */
+.a03-body {
+  display: flex;
+  flex: 1;
+  background-color: #FAF8F5;
+}
+
+.a03-main {
+  flex: 1;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1200px;
+}
+
+/* Banner Icon */
+.banner-category-icon {
+  color: #D48806;
+}
+
+/* 3 Stat Cards + Action Button Row */
+.a03-stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+/* Add Category Button (4th slot) */
+.a03-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #28543B;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 14px;
+  padding: 16px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  box-shadow: 0 1px 4px rgba(52, 68, 59, 0.12);
+}
+
+.a03-add-btn:hover {
+  background-color: #1E4230;
+}
+
+/* 2 Column Main Layout */
+.a03-content-grid {
+  display: grid;
+  grid-template-columns: 68fr 32fr;
+  gap: 16px;
+  align-items: start;
+}
+
+/* Left Column: Table & Filters */
+.a03-left-panel {
+  background-color: #FFFFFF;
+  border: 1px solid #ECE7DE;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 4px rgba(52, 68, 59, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.a03-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.a03-search-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border: 1px solid #DED8CC;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  color: #3E4D45;
+}
+
+.a03-search-box input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 12.5px;
+  color: #233329;
+  background: transparent;
+}
+
+.a03-search-box input::placeholder {
+  color: #8B9E94;
+}
+
+.a03-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1px solid #DED8CC;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  color: #3E4D45;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.a03-dropdown-btn:hover {
+  border-color: #B5AD9F;
+  background-color: #FAF7F0;
+}
+
+/* Category Table */
+.a03-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.a03-table th {
+  text-align: left;
+  padding: 10px 10px;
+  color: #7B8B82;
+  font-weight: 600;
+  font-size: 11.5px;
+  border-bottom: 1px solid #F0ECE4;
+}
+
+.a03-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #F7F4EE;
+  vertical-align: middle;
+}
+
+.a03-table tr:hover {
+  background-color: #FCFBF9;
+}
+
+.a03-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Row 1 selected highlight */
+.a03-table tr.a03-row-selected {
+  background-color: #F0FAF2;
+}
+
+/* Category Cell (icon + name) */
+.a03-category-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.a03-cat-icon-wrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cat-icon-brown {
+  background-color: #EFEBE2;
+  color: #8B6914;
+}
+
+.cat-icon-blue {
+  background-color: #E3F2FD;
+  color: #1565C0;
+}
+
+.cat-icon-purple {
+  background-color: #EDE7F6;
+  color: #6A1B9A;
+}
+
+.cat-icon-teal {
+  background-color: #E0F2F1;
+  color: #00796B;
+}
+
+.cat-icon-red {
+  background-color: #FFEBEE;
+  color: #C62828;
+}
+
+.cat-icon-cyan {
+  background-color: #E0F7FA;
+  color: #00838F;
+}
+
+.cat-icon-pink {
+  background-color: #FCE4EC;
+  color: #AD1457;
+}
+
+.cat-icon-grey {
+  background-color: #F5F5F5;
+  color: #616161;
+}
+
+.a03-cat-name {
+  font-weight: 700;
+  color: #233329;
+  font-size: 13px;
+}
+
+/* Description column */
+.a03-desc-txt {
+  color: #55685E;
+  font-size: 12px;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Item count column */
+.a03-count-txt {
+  font-weight: 600;
+  color: #233329;
+  text-align: center;
+}
+
+/* Status Badges */
+.a03-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-visible {
+  background-color: #E8F5E9;
+  color: #2E7D32;
+  border: 1px solid #C8E6C9;
+}
+
+.status-hidden-cat {
+  background-color: #FFF3E0;
+  color: #E65100;
+  border: 1px solid #FFE0B2;
+}
+
+/* Action icons */
+.a03-actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.a03-action-btn {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: #55685E;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.a03-action-btn:hover {
+  background-color: #F0ECE4;
+  color: #233329;
+}
+
+/* Pagination Footer */
+.a03-pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  font-size: 12px;
+  color: #67786F;
+}
+
+.a03-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.a03-page-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ECE7DE;
+  border-radius: 6px;
+  background-color: #FFFFFF;
+  color: #3E4D45;
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.a03-page-btn:hover {
+  border-color: #D48806;
+}
+
+.a03-page-btn.active {
+  background-color: #28543B;
+  border-color: #28543B;
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+/* ===================== RIGHT PANEL ===================== */
+.a03-right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.a03-detail-card {
+  background-color: #FFFFFF;
+  border: 1px solid #ECE7DE;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 4px rgba(52, 68, 59, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.a03-card-sec-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #233329;
+}
+
+.a03-card-sec-title svg {
+  color: #28543B;
+}
+
+/* Form Fields */
+.a03-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.a03-form-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #34443B;
+}
+
+.a03-form-label .required {
+  color: #D64527;
+  margin-left: 2px;
+}
+
+.a03-form-input {
+  padding: 8px 12px;
+  border: 1px solid #DED8CC;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #233329;
+  background-color: #FFFFFF;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.a03-form-input:focus {
+  border-color: #28543B;
+}
+
+.a03-form-textarea-wrap {
+  position: relative;
+}
+
+.a03-form-textarea {
+  padding: 8px 12px;
+  border: 1px solid #DED8CC;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #233329;
+  background-color: #FFFFFF;
+  outline: none;
+  resize: none;
+  width: 100%;
+  min-height: 72px;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  transition: border-color 0.15s ease;
+  box-sizing: border-box;
+}
+
+.a03-form-textarea:focus {
+  border-color: #28543B;
+}
+
+.a03-char-count {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 11px;
+  color: #8B9E94;
+}
+
+/* Status Toggle */
+.a03-toggle-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.a03-toggle-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.a03-toggle-text {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #34443B;
+}
+
+.a03-toggle-switch {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  background-color: #C5D1CA;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border: none;
+  padding: 0;
+}
+
+.a03-toggle-switch.active {
+  background-color: #2E7D32;
+}
+
+.a03-toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.a03-toggle-switch.active .a03-toggle-knob {
+  transform: translateX(18px);
+}
+
+/* Info Notice */
+.a03-info-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  background-color: #F0F7F2;
+  border: 1px solid #C8E6C9;
+  border-radius: 8px;
+  font-size: 11.5px;
+  color: #3E4D45;
+  line-height: 1.45;
+}
+
+.a03-info-notice svg {
+  flex-shrink: 0;
+  color: #2E7D32;
+  margin-top: 1px;
+}
+
+/* Bottom Action Buttons */
+.a03-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.a03-btn-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 1px solid #DED8CC;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  color: #3E4D45;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.a03-btn-refresh:hover {
+  background-color: #FAF7F0;
+}
+
+.a03-btn-cancel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 1px solid #FFA39E;
+  border-radius: 8px;
+  background-color: #FFF1F0;
+  color: #CF1322;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.a03-btn-cancel:hover {
+  background-color: #FFE5E5;
+}
+
+.a03-btn-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 1px solid #C8E6C9;
+  border-radius: 8px;
+  background-color: #E8F5E9;
+  color: #2E7D32;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.a03-btn-save:hover {
+  background-color: #C8E6C9;
+}
+

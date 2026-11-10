@@ -1,0 +1,541 @@
+/* ==========================================================================
+   M04_Claim_Verification_Handover — Authentic Cozy Campus UX/UI Design
+   ========================================================================== */
+
+.m04-page-wrapper {
+  min-height: 100vh;
+  background-color: #FFFFFF;
+  color: #34443B;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.m04-body {
+  display: flex;
+  flex: 1;
+  background-color: #FAF8F5;
+}
+
+.m04-main {
+  flex: 1;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1200px;
+}
+
+/* ---------------- Top Stepper & Back Link ---------------- */
+.m04-top-nav-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.m04-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #55685E;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
+  width: fit-content;
+}
+
+.m04-back-link:hover {
+  color: #28543B;
+}
+
+/* Stepper bar */
+.m04-stepper-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #FFFFFF;
+  border: 1px solid #ECE7DE;
+  border-radius: 12px;
+  padding: 10px 18px;
+  width: fit-content;
+  box-shadow: 0 1px 3px rgba(52, 68, 59, 0.02);
+}
+
+.m04-step-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #67786F;
+}
+
+.m04-step-badge-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background-color: #E8F5E9;
+  color: #2E7D32;
+  font-weight: 600;
+}
+
+.m04-step-badge-active {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  background-color: #28543B;
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+.m04-step-num-active {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  color: #28543B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.m04-step-badge-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background-color: transparent;
+  color: #8B9E94;
+}
+
+.m04-step-num-next {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid #C5D1CA;
+  color: #8B9E94;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+
+.m04-step-arrow {
+  color: #C5D1CA;
+}
+
+/* ---------------- Main Content Grid ---------------- */
+.m04-content-grid {
+  display: grid;
+  grid-template-columns: 58fr 42fr;
+  gap: 16px;
+  align-items: start;
+}
+
+/* ---------------- Left Column ---------------- */
+.m04-left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Top two cards row in Left Column */
+.m04-two-cards-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.m04-card {
+  background-color: #FFFFFF;
+  border: 1px solid #ECE7DE;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 3px rgba(52, 68, 59, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.m04-card-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #233329;
+}
+
+.m04-card-title svg {
+  color: #2E7D32;
+}
+
+/* Fields list in Info Card */
+.m04-fields-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.m04-field-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.m04-field-row svg {
+  color: #7B8B82;
+  flex-shrink: 0;
+}
+
+.m04-field-label {
+  color: #67786F;
+  min-width: 80px;
+}
+
+.m04-field-val {
+  font-weight: 600;
+  color: #233329;
+}
+
+/* Linked item mini card in Left Column */
+.m04-linked-item-box {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.m04-linked-thumb {
+  width: 72px;
+  height: 52px;
+  border-radius: 6px;
+  object-fit: cover;
+  background-color: #F0EDE6;
+  border: 1px solid #ECE7DE;
+  flex-shrink: 0;
+}
+
+.m04-linked-right {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.m04-linked-title-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.m04-linked-item-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #233329;
+}
+
+.m04-linked-meta-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11px;
+  color: #67786F;
+}
+
+.m04-meta-line {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.m04-btn-view-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid #C8E6C9;
+  border-radius: 14px;
+  background-color: #FFFFFF;
+  color: #2E7D32;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  width: fit-content;
+  margin-top: 4px;
+}
+
+/* Evidence Card in Left Column */
+.m04-evidence-card {
+  background-color: #FFFFFF;
+  border: 1px solid #ECE7DE;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.m04-evidence-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.m04-evidence-photos-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.m04-evidence-img-box {
+  position: relative;
+  width: 90px;
+  height: 56px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #ECE7DE;
+  cursor: pointer;
+}
+
+.m04-evidence-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.m04-expand-icon {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #34443B;
+}
+
+.m04-desc-box {
+  background-color: #FAF8F5;
+  border: 1px solid #ECE7DE;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 11.5px;
+  color: #34443B;
+  line-height: 1.5;
+  height: 56px;
+  box-sizing: border-box;
+}
+
+/* Notice Box */
+.m04-notice-card {
+  background-color: #F7FAF7;
+  border: 1px solid #DCECDC;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.m04-notice-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #2E7D32;
+}
+
+.m04-notice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11.5px;
+  color: #55685E;
+  line-height: 1.45;
+  padding-left: 2px;
+}
+
+/* ---------------- Right Column: Handover Form ---------------- */
+.m04-right-panel {
+  background-color: #FFFFFF;
+  border: 1px solid #ECE7DE;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 4px rgba(52, 68, 59, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.m04-right-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.m04-checklist-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.m04-check-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #233329;
+  font-weight: 500;
+}
+
+.m04-check-item svg {
+  color: #2E7D32;
+  flex-shrink: 0;
+}
+
+/* Form fields */
+.m04-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.m04-form-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #34443B;
+}
+
+.m04-form-label .required {
+  color: #D64527;
+  margin-left: 2px;
+}
+
+.m04-input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.m04-input-with-icon input {
+  width: 100%;
+  padding: 8px 36px 8px 12px;
+  border: 1px solid #DED8CC;
+  border-radius: 8px;
+  font-size: 12.5px;
+  color: #233329;
+  background-color: #FFFFFF;
+  outline: none;
+}
+
+.m04-input-with-icon .input-icon-right {
+  position: absolute;
+  right: 12px;
+  color: #7B8B82;
+  pointer-events: none;
+}
+
+.m04-select-dropdown {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #DED8CC;
+  border-radius: 8px;
+  font-size: 12.5px;
+  color: #233329;
+  background-color: #FFFFFF;
+  outline: none;
+  cursor: pointer;
+}
+
+.m04-textarea-wrap {
+  position: relative;
+}
+
+.m04-textarea {
+  width: 100%;
+  padding: 8px 12px 24px 12px;
+  border: 1px solid #DED8CC;
+  border-radius: 8px;
+  font-size: 12.5px;
+  color: #233329;
+  background-color: #FFFFFF;
+  outline: none;
+  min-height: 56px;
+  resize: none;
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+.m04-textarea-counter {
+  position: absolute;
+  bottom: 6px;
+  right: 10px;
+  font-size: 10.5px;
+  color: #8B9E94;
+}
+
+/* Action buttons footer */
+.m04-form-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 6px;
+}
+
+.m04-btn-reject-lg {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
+  border: 1px solid #FFA39E;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  color: #CF1322;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.m04-btn-reject-lg:hover {
+  background-color: #FFF1F0;
+}
+
+.m04-btn-confirm-lg {
+  flex: 1.3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #28543B;
+  color: #FFFFFF;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.m04-btn-confirm-lg:hover {
+  background-color: #1F422F;
+}
+
