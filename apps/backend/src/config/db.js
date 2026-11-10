@@ -11,9 +11,9 @@ const pool = new Pool({
 // Test kết nối ngay khi khởi động
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
-    console.error('❌ Lỗi kết nối Supabase:', err.message);
+    console.error('Lỗi kết nối Supabase:', err.message);
   } else {
-    console.log('✅ Kết nối Supabase PostgreSQL thành công lúc:', res.rows[0].now);
+    console.log('Kết nối Supabase PostgreSQL thành công lúc:', res.rows[0].now);
   }
 });
 
