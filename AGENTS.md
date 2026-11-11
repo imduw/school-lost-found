@@ -1,41 +1,74 @@
 # AGENTS.md
 
-Hướng dẫn cho AI agent (Claude Code, Gemini CLI, Cursor, Copilot...) khi làm việc trong repo này.
+Instructions for AI coding agents (Claude Code, Gemini CLI, Antigravity, Cursor, GitHub Copilot, Codex, etc.) working in this repository.
 
-## Bối cảnh dự án
+## 1. Project Architecture: Monorepo (Code + Documentation)
 
-Đây là repo cho môn **Quản trị dự án phần mềm**, đề tài **"School Lost & Found"** (tìm kiếm đồ thất lạc trong trường học). Repo này **không chứa source code sản phẩm hoàn chỉnh** — nội dung chính là tài liệu quản trị dự án: project charter, WBS, backlog, thiết kế, báo cáo giám sát theo từng giai đoạn. Không tự ý khởi tạo source code ứng dụng (React/Node/...) trừ khi được yêu cầu rõ ràng.
+**PRIMARY CONSTRAINT:** This repository follows a **Monorepo architecture** containing **both** the runnable full-stack application source code AND the Software Project Management documentation for the **"School Lost & Found"** project.
 
-## Cấu trúc thư mục
+### Directory Structure
 
+```text
+school-lost-found/
+├── .gitignore                 # SINGLE root .gitignore for the entire Monorepo
+├── .githooks/                 # Shared team Git hooks (commit-msg, pre-commit, pre-push)
+├── .github/                   # Copilot instructions, PR/Issue templates, CODEOWNERS
+├── .agents/skills/            # Shared AI agent workflow skills
+├── .vscode/tasks.json         # Parallel dev runner (Frontend :5173 + Backend :5000)
+├── apps/
+│   ├── web/                   # Frontend: React 19 + Vite (port 5173, proxies /api -> :5000)
+│   └── backend/               # Backend: Node.js + Express 5 + PostgreSQL (port 5000)
+├── database/                  # Canonical PostgreSQL/Supabase DDL (schema.sql) & DML (seed.sql)
+├── docs/                      # Project Management docs (01-khoi-tao .. 06-ban-giao, references)
+└── meeting-notes/             # Weekly/sprint meeting minutes (YYYY-MM-DD-topic.md)
 ```
-docs/01-khoi-tao/      Project charter, stakeholder analysis
-docs/02-lap-ke-hoach/  WBS, schedule, risk register
-docs/03-yeu-cau/       Backlog, user stories
-docs/04-thiet-ke/      System design
-docs/05-giam-sat/      Báo cáo tiến độ theo sprint/giai đoạn
-meeting-notes/         Biên bản họp (mỗi buổi 1 file, đặt tên YYYY-MM-DD-chu-de.md)
-.githooks/             Git hooks dùng chung cho team (commit-msg, pre-commit, pre-push)
-```
 
-## Quy ước commit (bắt buộc — có hook chặn)
+---
 
-```
-[GiaiDoan] loai: mo ta (toi thieu 10 ky tu)
-```
-- GiaiDoan: `Init | Planning | Requirements | Design | Execution | Monitoring | Closing`
-- loai: `feat | docs | fix | chore | refactor | test | wip`
+## 2. Mandatory Monorepo Rules
 
-Khi agent tạo commit hộ người dùng, LUÔN theo đúng format trên, không tự ý rút gọn.
+### A. No Duplicate Config Rule
+- **Single Root `.gitignore`:** This Monorepo uses **one single `.gitignore` at the repository root**.
+- **DO NOT** create nested `.gitignore` files inside `apps/web/`, `apps/backend/`, or `database/`.
+- **DO NOT** leave stray `.env` files, duplicate config files, or LibreOffice/editor lock files (`~$*`, `.~lock.*`) inside subdirectories. Only `.env.example` templates are allowed to be committed to Git. Never commit real `.env` files containing secrets or database credentials.
 
-## Quy tắc khi chỉnh sửa
+### B. API Contract Rule (Backend <-> Frontend)
+- **Backend Standard Envelope (`apps/backend`):**
+  Every REST API endpoint under `/api/v1/...` **MUST** return the standardized JSON envelope:
+  - Success: `{ "success": true, "data": ... }`
+  - Error: `{ "success": false, "error": { "code": "ERROR_CODE", "message": "Human-readable message" } }`
+- **Frontend Service Layer (`apps/web`):**
+  - Components and pages **MUST NOT** use hardcoded mock data arrays once integrated, and **MUST NOT** hardcode `http://localhost:5000` directly inside components.
+  - All HTTP requests **MUST** go through `apps/web/src/services/apiClient.js` and dedicated service modules (e.g., `itemService.js`), which automatically attach JWT tokens and use `/api/v1` (via Vite proxy in dev) or `VITE_API_URL` (in production).
+- **Database Consistency (`database/` & `apps/backend`):**
+  - The database runs on **Supabase (PostgreSQL)**. Always use PostgreSQL-compatible SQL (`BIGSERIAL`, `TIMESTAMPTZ`, `$1/$2` parameterized queries via `pg`) — never MySQL-only syntax.
 
-- Không commit thẳng vào `main`/`master` — tạo nhánh `feature/<mo-ta>` trước.
-- Không sửa file ngoài phạm vi được giao (xem `.github/CODEOWNERS`) trừ khi được yêu cầu.
-- Không xoá/đổi format hook trong `.githooks/` trừ khi người dùng yêu cầu rõ ràng.
-- Khi tạo tài liệu mới, bám theo cấu trúc và văn phong các file hiện có trong cùng thư mục `docs/`.
-- Ưu tiên nhiều commit nhỏ theo tiến trình (draft → revise → final) hơn 1 commit lớn gộp hết.
+---
 
-## Ngôn ngữ
+## 3. Git & Commit Conventions (Enforced by Hooks)
 
-Tài liệu và commit message trong repo này chủ yếu viết bằng tiếng Việt. Agent nên trả lời và soạn nội dung bằng tiếng Việt trừ khi người dùng yêu cầu khác.
+- **Branching:** Never commit directly to `main` or `master`. Create a feature/fix/chore branch first (e.g., `feature/<short-description>`).
+- **Commit Message Format (Mandatory — checked by `.githooks/commit-msg`):**
+  ```text
+  [GiaiDoan] loai: mo ta (toi thieu 10 ky tu)
+  ```
+  - `GiaiDoan`: `Init | Planning | Requirements | Design | Execution | Monitoring | Closing`
+  - `loai`: `feat | docs | fix | chore | refactor | test | wip`
+  - Example: `[Execution] feat: add claim submission endpoint and proof privacy check`
+- **Hook Integrity:** Do not delete or alter `.githooks/` unless explicitly instructed by the user.
+- **Documentation Integrity:** When adding project management documents under `docs/`, follow the existing Vietnamese markdown structure and style.
+
+---
+
+## 4. Shared Agent Skills
+
+Before implementing new Backend endpoints or connecting Frontend views to APIs, consult the shared skills in `.agents/skills/`:
+- **Backend API Standard:** `.agents/skills/backend-api-standard/SKILL.md`
+- **Frontend API Integration:** `.agents/skills/frontend-api-integration/SKILL.md`
+
+---
+
+## 5. Communication Language
+
+- Chat responses and project management documentation in `docs/` should be written in **Vietnamese** unless the user requests otherwise.
+- Code identifiers, API contracts, and agent instruction files (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md`, `.agents/skills/`) follow this English engineering specification.
