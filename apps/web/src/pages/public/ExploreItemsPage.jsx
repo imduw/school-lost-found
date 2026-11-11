@@ -140,7 +140,6 @@ export default function ExploreItemsPage() {
                   type="text"
                   value={keyword}
                   onChange={(e) => setKeyword(e.target.value)}
-                  placeholder="Nhập từ khóa (ví, thẻ, tai nghe...)"
                 />
               </div>
             </div>
@@ -225,7 +224,6 @@ export default function ExploreItemsPage() {
                   type="text"
                   value={locationText}
                   onChange={(e) => setLocationText(e.target.value)}
-                  placeholder="VD: Thư viện, Giảng đường V..."
                 />
               </div>
             </div>

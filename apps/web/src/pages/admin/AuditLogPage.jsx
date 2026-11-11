@@ -257,7 +257,7 @@ export default function AuditLogPage() {
               <div className="a04-filter-bar">
                 <div className="a04-search-box">
                   <Search size={15} color="#8B9E94" />
-                  <input type="text" placeholder="Tìm theo người thực hiện, đối tượng, nội dung..." />
+                  <input type="text" />
                 </div>
                 <button className="a04-dropdown-btn">
                   <Calendar size={13} />

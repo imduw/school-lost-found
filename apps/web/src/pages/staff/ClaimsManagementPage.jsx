@@ -236,7 +236,7 @@ export default function ClaimsManagementPage() {
               <div className="m02-filter-bar">
                 <div className="m02-search-box">
                   <Search size={15} color="#8B9E94" />
-                  <input type="text" placeholder="Tìm theo mã yêu cầu, mã SV, tiêu đề tin..." />
+                  <input type="text" />
                 </div>
                 <button className="m02-dropdown-btn">
                   <Calendar size={13} />

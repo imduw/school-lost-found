@@ -1,8 +1,28 @@
+const fs = require('fs');
+const path = require('path');
 const pool = require('../config/db');
+const { UPLOAD_DIR } = require('../middlewares/upload.middleware');
 
 const isStaff = (user) => user && ['ADMIN', 'MODERATOR'].includes(user.role);
 
-const formatItemRow = (row) => ({
+const cleanupUploadedFiles = (files = []) => {
+  for (const file of files) {
+    if (file && file.path) {
+      fs.unlink(file.path, () => {});
+    }
+  }
+};
+
+const formatImageRow = (row) => ({
+  id: Number(row.id),
+  itemId: Number(row.item_id),
+  storageUrl: row.storage_url,
+  visibility: row.visibility,
+  sortOrder: Number(row.sort_order),
+  createdAt: row.created_at,
+});
+
+const formatItemRow = (row, images = []) => ({
   id: Number(row.id),
   userId: Number(row.user_id),
   author: {
@@ -23,9 +43,44 @@ const formatItemRow = (row) => ({
   occurredAt: row.occurred_at,
   publicationStatus: row.publication_status,
   businessStatus: row.business_status,
+  images,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
 });
+
+const attachImagesToItems = async (itemRows, currentUser) => {
+  if (!itemRows || itemRows.length === 0) return [];
+  const itemIds = itemRows.map((row) => Number(row.id));
+
+  const imagesResult = await pool.query(
+    `
+    SELECT id, item_id, storage_url, visibility, sort_order, created_at
+    FROM item_images
+    WHERE item_id = ANY($1::bigint[])
+    ORDER BY sort_order ASC, id ASC
+    `,
+    [itemIds]
+  );
+
+  const imagesByItemId = new Map();
+  for (const imgRow of imagesResult.rows) {
+    const key = Number(imgRow.item_id);
+    if (!imagesByItemId.has(key)) {
+      imagesByItemId.set(key, []);
+    }
+    imagesByItemId.get(key).push(imgRow);
+  }
+
+  return itemRows.map((row) => {
+    const rawImages = imagesByItemId.get(Number(row.id)) || [];
+    const canSeePrivate = isStaff(currentUser) || (currentUser && Number(currentUser.id) === Number(row.user_id));
+    const visibleImages = rawImages
+      .filter((img) => img.visibility === 'PUBLIC' || canSeePrivate)
+      .map(formatImageRow);
+
+    return formatItemRow(row, visibleImages);
+  });
+};
 
 /**
  * GET /api/v1/categories
@@ -84,11 +139,9 @@ const getItems = async (req, res) => {
           },
         });
       }
-      // Chủ tin được xem toàn bộ tin của chính mình (bao gồm cả tin đang bị HIDDEN để theo dõi)
       conditions.push(`i.user_id = $${paramIndex++}`);
       params.push(req.user.id);
     } else if (!isStaff(req.user)) {
-      // Người thường và khách tuyệt đối không thấy tin HIDDEN/REJECTED/PENDING_REVIEW
       conditions.push(`i.publication_status = 'APPROVED'`);
     }
 
@@ -165,10 +218,11 @@ const getItems = async (req, res) => {
     `;
 
     const result = await pool.query(query, params);
+    const itemsWithImages = await attachImagesToItems(result.rows, req.user);
 
     return res.status(200).json({
       success: true,
-      data: result.rows.map(formatItemRow),
+      data: itemsWithImages,
     });
   } catch (error) {
     console.error('Get items error:', error);
@@ -227,7 +281,6 @@ const getItemById = async (req, res) => {
 
     const item = result.rows[0];
 
-    // Kiểm tra quyền nếu tin không ở trạng thái APPROVED (VD: bị HIDDEN)
     if (item.publication_status !== 'APPROVED') {
       const isOwner = req.user && Number(req.user.id) === Number(item.user_id);
       if (!isOwner && !isStaff(req.user)) {
@@ -241,9 +294,11 @@ const getItemById = async (req, res) => {
       }
     }
 
+    const [formattedItem] = await attachImagesToItems([item], req.user);
+
     return res.status(200).json({
       success: true,
-      data: formatItemRow(item),
+      data: formattedItem,
     });
   } catch (error) {
     console.error('Get item by ID error:', error);
@@ -259,13 +314,15 @@ const getItemById = async (req, res) => {
 
 /**
  * POST /api/v1/items
- * Tạo tin đăng LOST hoặc FOUND mới (bắt buộc đăng nhập, kiểm tra trường bắt buộc)
+ * Tạo tin đăng LOST hoặc FOUND mới (hỗ trợ cả JSON lẫn multipart/form-data đính kèm ảnh lưu vào item_images)
  */
 const createItem = async (req, res) => {
+  const uploadedFiles = req.uploadedFiles || [];
+  let client;
+
   try {
     const { itemType, categoryId, title, description, approximateLocation, occurredAt } = req.body || {};
 
-    // Kiểm tra sự có mặt của các trường bắt buộc
     if (
       !itemType ||
       categoryId === undefined ||
@@ -275,6 +332,7 @@ const createItem = async (req, res) => {
       !approximateLocation ||
       !occurredAt
     ) {
+      cleanupUploadedFiles(uploadedFiles);
       return res.status(400).json({
         success: false,
         error: {
@@ -290,6 +348,7 @@ const createItem = async (req, res) => {
       typeof description !== 'string' ||
       typeof approximateLocation !== 'string'
     ) {
+      cleanupUploadedFiles(uploadedFiles);
       return res.status(400).json({
         success: false,
         error: {
@@ -305,6 +364,7 @@ const createItem = async (req, res) => {
     const cleanType = itemType.trim().toUpperCase();
 
     if (!cleanTitle || !cleanDescription || !cleanLocation) {
+      cleanupUploadedFiles(uploadedFiles);
       return res.status(400).json({
         success: false,
         error: {
@@ -315,6 +375,7 @@ const createItem = async (req, res) => {
     }
 
     if (!['LOST', 'FOUND'].includes(cleanType)) {
+      cleanupUploadedFiles(uploadedFiles);
       return res.status(400).json({
         success: false,
         error: {
@@ -326,6 +387,7 @@ const createItem = async (req, res) => {
 
     const parsedCatId = Number(categoryId);
     if (!Number.isInteger(parsedCatId) || parsedCatId <= 0) {
+      cleanupUploadedFiles(uploadedFiles);
       return res.status(400).json({
         success: false,
         error: {
@@ -337,6 +399,7 @@ const createItem = async (req, res) => {
 
     const parsedDate = new Date(occurredAt);
     if (Number.isNaN(parsedDate.getTime())) {
+      cleanupUploadedFiles(uploadedFiles);
       return res.status(400).json({
         success: false,
         error: {
@@ -346,9 +409,9 @@ const createItem = async (req, res) => {
       });
     }
 
-    // Kiểm tra danh mục có tồn tại trong DB không
     const catCheck = await pool.query('SELECT id FROM categories WHERE id = $1 AND is_active = TRUE', [parsedCatId]);
     if (catCheck.rows.length === 0) {
+      cleanupUploadedFiles(uploadedFiles);
       return res.status(400).json({
         success: false,
         error: {
@@ -358,7 +421,10 @@ const createItem = async (req, res) => {
       });
     }
 
-    const insertResult = await pool.query(
+    client = await pool.connect();
+    await client.query('BEGIN');
+
+    const insertResult = await client.query(
       `
       INSERT INTO items (
         user_id, category_id, item_type, title, description, 
@@ -372,7 +438,21 @@ const createItem = async (req, res) => {
 
     const newId = insertResult.rows[0].id;
 
-    // Lấy lại bản ghi đầy đủ thông tin category & author
+    // Nếu có ảnh upload kèm theo thì lưu vào bảng item_images
+    for (let idx = 0; idx < uploadedFiles.length; idx++) {
+      const file = uploadedFiles[idx];
+      const storageUrl = `/uploads/items/${file.filename}`;
+      await client.query(
+        `
+        INSERT INTO item_images (item_id, storage_url, visibility, sort_order)
+        VALUES ($1, $2, 'PUBLIC', $3)
+        `,
+        [newId, storageUrl, idx]
+      );
+    }
+
+    await client.query('COMMIT');
+
     const fullItemResult = await pool.query(
       `
       SELECT 
@@ -389,17 +469,255 @@ const createItem = async (req, res) => {
       [newId]
     );
 
+    const [formattedItem] = await attachImagesToItems(fullItemResult.rows, req.user);
+
     return res.status(201).json({
       success: true,
-      data: formatItemRow(fullItemResult.rows[0]),
+      data: formattedItem,
     });
   } catch (error) {
+    if (client) {
+      await client.query('ROLLBACK').catch(() => {});
+    }
+    cleanupUploadedFiles(uploadedFiles);
     console.error('Create item error:', error);
     return res.status(500).json({
       success: false,
       error: {
         code: 'INTERNAL_ERROR',
         message: 'Lỗi hệ thống khi tạo tin đăng mới',
+      },
+    });
+  } finally {
+    if (client) {
+      client.release();
+    }
+  }
+};
+
+/**
+ * POST /api/v1/items/:id/images
+ * Endpoint upload ảnh riêng cho sản phẩm, lưu đường dẫn vào bảng item_images
+ */
+const uploadItemImages = async (req, res) => {
+  const uploadedFiles = req.uploadedFiles || [];
+  let client;
+
+  try {
+    const itemId = Number(req.params.id);
+    if (!Number.isInteger(itemId) || itemId <= 0) {
+      cleanupUploadedFiles(uploadedFiles);
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'ID tin đăng không hợp lệ',
+        },
+      });
+    }
+
+    if (uploadedFiles.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Vui lòng chọn ít nhất 1 file ảnh để tải lên (field: images)',
+        },
+      });
+    }
+
+    const existingResult = await pool.query('SELECT * FROM items WHERE id = $1 AND deleted_at IS NULL', [itemId]);
+    if (existingResult.rows.length === 0) {
+      cleanupUploadedFiles(uploadedFiles);
+      return res.status(404).json({
+        success: false,
+        error: {
+          code: 'ITEM_NOT_FOUND',
+          message: 'Không tìm thấy tin đăng để gắn ảnh',
+        },
+      });
+    }
+
+    const item = existingResult.rows[0];
+    const isOwner = Number(item.user_id) === Number(req.user.id);
+    if (!isOwner && !isStaff(req.user)) {
+      cleanupUploadedFiles(uploadedFiles);
+      return res.status(403).json({
+        success: false,
+        error: {
+          code: 'FORBIDDEN',
+          message: 'Bạn không có quyền tải ảnh lên tin đăng của người khác',
+        },
+      });
+    }
+
+    if (!isStaff(req.user) && item.business_status !== 'OPEN') {
+      cleanupUploadedFiles(uploadedFiles);
+      return res.status(409).json({
+        success: false,
+        error: {
+          code: 'STATE_CONFLICT',
+          message: 'Chỉ có thể bổ sung ảnh cho tin đang mở (OPEN)',
+        },
+      });
+    }
+
+    const requestedVisibility = req.body?.visibility ? String(req.body.visibility).trim().toUpperCase() : 'PUBLIC';
+    if (!['PUBLIC', 'PRIVATE'].includes(requestedVisibility)) {
+      cleanupUploadedFiles(uploadedFiles);
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'visibility chỉ chấp nhận PUBLIC hoặc PRIVATE',
+        },
+      });
+    }
+
+    const countResult = await pool.query(
+      'SELECT COUNT(*)::int AS total, COALESCE(MAX(sort_order), -1)::int AS max_order FROM item_images WHERE item_id = $1',
+      [itemId]
+    );
+    const currentTotal = countResult.rows[0].total;
+    let nextOrder = countResult.rows[0].max_order + 1;
+
+    if (currentTotal + uploadedFiles.length > 5) {
+      cleanupUploadedFiles(uploadedFiles);
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: `Mỗi tin chỉ lưu tối đa 5 ảnh (hiện đã có ${currentTotal} ảnh)`,
+        },
+      });
+    }
+
+    client = await pool.connect();
+    await client.query('BEGIN');
+
+    const insertedImages = [];
+    for (const file of uploadedFiles) {
+      const storageUrl = `/uploads/items/${file.filename}`;
+      const imgRes = await client.query(
+        `
+        INSERT INTO item_images (item_id, storage_url, visibility, sort_order)
+        VALUES ($1, $2, $3, $4)
+        RETURNING id, item_id, storage_url, visibility, sort_order, created_at
+        `,
+        [itemId, storageUrl, requestedVisibility, nextOrder++]
+      );
+      insertedImages.push(formatImageRow(imgRes.rows[0]));
+    }
+
+    await client.query('COMMIT');
+
+    return res.status(201).json({
+      success: true,
+      data: insertedImages,
+    });
+  } catch (error) {
+    if (client) {
+      await client.query('ROLLBACK').catch(() => {});
+    }
+    cleanupUploadedFiles(uploadedFiles);
+    console.error('Upload item images error:', error);
+    return res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Lỗi hệ thống khi lưu ảnh sản phẩm',
+      },
+    });
+  } finally {
+    if (client) {
+      client.release();
+    }
+  }
+};
+
+/**
+ * DELETE /api/v1/items/:id/images/:imageId
+ * Xóa một ảnh đã tải lên khỏi bảng item_images và ổ đĩa
+ */
+const deleteItemImage = async (req, res) => {
+  try {
+    const itemId = Number(req.params.id);
+    const imageId = Number(req.params.imageId);
+    if (!Number.isInteger(itemId) || itemId <= 0 || !Number.isInteger(imageId) || imageId <= 0) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'ID tin đăng hoặc ID ảnh không hợp lệ',
+        },
+      });
+    }
+
+    const itemResult = await pool.query('SELECT * FROM items WHERE id = $1 AND deleted_at IS NULL', [itemId]);
+    if (itemResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          code: 'ITEM_NOT_FOUND',
+          message: 'Không tìm thấy tin đăng',
+        },
+      });
+    }
+
+    const item = itemResult.rows[0];
+    const isOwner = Number(item.user_id) === Number(req.user.id);
+    if (!isOwner && !isStaff(req.user)) {
+      return res.status(403).json({
+        success: false,
+        error: {
+          code: 'FORBIDDEN',
+          message: 'Bạn không có quyền xóa ảnh của tin đăng này',
+        },
+      });
+    }
+
+    if (!isStaff(req.user) && item.business_status !== 'OPEN') {
+      return res.status(409).json({
+        success: false,
+        error: {
+          code: 'STATE_CONFLICT',
+          message: 'Chỉ có thể xóa ảnh khi tin đang ở trạng thái OPEN',
+        },
+      });
+    }
+
+    const deleteRes = await pool.query(
+      'DELETE FROM item_images WHERE id = $1 AND item_id = $2 RETURNING storage_url',
+      [imageId, itemId]
+    );
+
+    if (deleteRes.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          code: 'IMAGE_NOT_FOUND',
+          message: 'Không tìm thấy ảnh cần xóa',
+        },
+      });
+    }
+
+    const storageUrl = deleteRes.rows[0].storage_url;
+    if (storageUrl && storageUrl.startsWith('/uploads/items/')) {
+      const filename = path.basename(storageUrl);
+      fs.unlink(path.join(UPLOAD_DIR, filename), () => {});
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: { message: 'Đã xóa ảnh thành công' },
+    });
+  } catch (error) {
+    console.error('Delete item image error:', error);
+    return res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Lỗi hệ thống khi xóa ảnh',
       },
     });
   }
@@ -435,7 +753,6 @@ const updateItem = async (req, res) => {
 
     const existingItem = existingResult.rows[0];
 
-    // Kiểm tra chính chủ
     if (Number(existingItem.user_id) !== Number(req.user.id)) {
       return res.status(403).json({
         success: false,
@@ -446,7 +763,6 @@ const updateItem = async (req, res) => {
       });
     }
 
-    // Chỉ được sửa tin khi trạng thái là OPEN
     if (existingItem.business_status !== 'OPEN') {
       return res.status(409).json({
         success: false,
@@ -554,9 +870,11 @@ const updateItem = async (req, res) => {
       [itemId]
     );
 
+    const [formattedItem] = await attachImagesToItems(updatedResult.rows, req.user);
+
     return res.status(200).json({
       success: true,
-      data: formatItemRow(updatedResult.rows[0]),
+      data: formattedItem,
     });
   } catch (error) {
     console.error('Update item error:', error);
@@ -600,7 +918,6 @@ const resolveLostItem = async (req, res) => {
 
     const existingItem = existingResult.rows[0];
 
-    // Chỉ chủ tin mới có quyền đánh dấu đã tìm thấy
     if (Number(existingItem.user_id) !== Number(req.user.id)) {
       return res.status(403).json({
         success: false,
@@ -611,7 +928,6 @@ const resolveLostItem = async (req, res) => {
       });
     }
 
-    // Chỉ áp dụng cho tin LOST
     if (existingItem.item_type !== 'LOST') {
       return res.status(400).json({
         success: false,
@@ -622,7 +938,6 @@ const resolveLostItem = async (req, res) => {
       });
     }
 
-    // Chặn thao tác lặp hoặc tin không ở trạng thái OPEN
     if (existingItem.business_status !== 'OPEN') {
       return res.status(409).json({
         success: false,
@@ -651,9 +966,11 @@ const resolveLostItem = async (req, res) => {
       [itemId]
     );
 
+    const [formattedItem] = await attachImagesToItems(updatedResult.rows, req.user);
+
     return res.status(200).json({
       success: true,
-      data: formatItemRow(updatedResult.rows[0]),
+      data: formattedItem,
     });
   } catch (error) {
     console.error('Resolve lost item error:', error);
@@ -672,6 +989,8 @@ module.exports = {
   getItems,
   getItemById,
   createItem,
+  uploadItemImages,
+  deleteItemImage,
   updateItem,
   resolveLostItem,
 };

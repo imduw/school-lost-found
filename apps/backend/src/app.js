@@ -1,13 +1,15 @@
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const pool = require('./config/db');
 
 const app = express();
 
-// 1. Middlewares cơ bản
+// 1. Middlewares cơ bản & Static file cho ảnh upload
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static(path.resolve(__dirname, '../uploads')));
 
 // 2. Route trang chủ mặc định kiểm tra API server
 app.get('/', (req, res) => {

@@ -45,12 +45,49 @@ export const itemService = {
     }
   },
 
-  async createItem(payload) {
+  async createItem({ files = [], ...fields }) {
     try {
-      const res = await apiClient.post('/items', payload)
+      if (files && files.length > 0) {
+        const formData = new FormData()
+        Object.entries(fields).forEach(([key, val]) => {
+          if (val !== undefined && val !== null) {
+            formData.append(key, String(val))
+          }
+        })
+        files.forEach((file) => {
+          formData.append('images', file)
+        })
+        const res = await apiClient.post('/items', formData)
+        return res.data.data
+      }
+
+      const res = await apiClient.post('/items', fields)
       return res.data.data
     } catch (error) {
       throw new Error(getApiErrorMessage(error, 'Không thể đăng tin mới'), { cause: error })
+    }
+  },
+
+  async uploadItemImages(itemId, files, visibility = 'PUBLIC') {
+    try {
+      const formData = new FormData()
+      formData.append('visibility', visibility)
+      files.forEach((file) => {
+        formData.append('images', file)
+      })
+      const res = await apiClient.post(`/items/${itemId}/images`, formData)
+      return res.data.data || []
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, 'Không thể tải ảnh lên'), { cause: error })
+    }
+  },
+
+  async deleteItemImage(itemId, imageId) {
+    try {
+      const res = await apiClient.delete(`/items/${itemId}/images/${imageId}`)
+      return res.data.data
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, 'Không thể xóa ảnh'), { cause: error })
     }
   },
 

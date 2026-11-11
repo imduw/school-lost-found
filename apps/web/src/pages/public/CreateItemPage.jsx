@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router'
-import { PlusCircle, AlertCircle, Lock } from 'lucide-react'
+import { PlusCircle, AlertCircle, Lock, ImagePlus, X } from 'lucide-react'
 import PublicHeader from '../../components/PublicHeader'
 import { useAuth } from '../../contexts/useAuth'
 import { itemService } from '../../services/itemService'
@@ -20,6 +20,7 @@ export default function CreateItemPage() {
   const [description, setDescription] = useState('')
   const [approximateLocation, setApproximateLocation] = useState('')
   const [occurredAt, setOccurredAt] = useState(() => new Date().toISOString().slice(0, 16))
+  const [selectedImages, setSelectedImages] = useState([])
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
@@ -35,6 +36,40 @@ export default function CreateItemPage() {
       .catch((err) => setError(err.message))
   }, [])
 
+  useEffect(() => {
+    return () => {
+      selectedImages.forEach((item) => URL.revokeObjectURL(item.previewUrl))
+    }
+  }, [selectedImages])
+
+  const handleSelectFiles = (e) => {
+    const picked = Array.from(e.target.files || [])
+    if (picked.length === 0) return
+
+    setError('')
+    const remainingSlots = 5 - selectedImages.length
+    if (picked.length > remainingSlots) {
+      setError('Chỉ được tải lên tối đa 5 ảnh cho mỗi tin đăng')
+    }
+
+    const validNext = picked.slice(0, remainingSlots).map((file) => ({
+      file,
+      previewUrl: URL.createObjectURL(file),
+    }))
+    setSelectedImages((prev) => [...prev, ...validNext])
+    e.target.value = ''
+  }
+
+  const handleRemoveImage = (index) => {
+    setSelectedImages((prev) => {
+      const target = prev[index]
+      if (target) {
+        URL.revokeObjectURL(target.previewUrl)
+      }
+      return prev.filter((_, idx) => idx !== index)
+    })
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
@@ -47,6 +82,7 @@ export default function CreateItemPage() {
         description,
         approximateLocation,
         occurredAt: new Date(occurredAt).toISOString(),
+        files: selectedImages.map((img) => img.file),
       })
       navigate(`/items/${created.id}`)
     } catch (err) {
@@ -172,7 +208,6 @@ export default function CreateItemPage() {
                     required
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="VD: Nhặt được thẻ sinh viên tại thư viện tầng 2"
                     style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1px solid #CBD5E1', fontSize: 14 }}
                   />
                 </div>
@@ -186,7 +221,6 @@ export default function CreateItemPage() {
                     required
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Mô tả màu sắc, đặc điểm chung (tránh ghi thông tin bí mật để đối chiếu)..."
                     style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1px solid #CBD5E1', fontSize: 14 }}
                   />
                 </div>
@@ -201,7 +235,6 @@ export default function CreateItemPage() {
                       required
                       value={approximateLocation}
                       onChange={(e) => setApproximateLocation(e.target.value)}
-                      placeholder="VD: Giảng đường V - Phòng V.201"
                       style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1px solid #CBD5E1', fontSize: 14 }}
                     />
                   </div>
@@ -220,6 +253,87 @@ export default function CreateItemPage() {
                   </div>
                 </div>
 
+                {/* Upload ảnh đính kèm (lưu vào bảng item_images) */}
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 6, color: '#374151' }}>
+                    Hình ảnh sản phẩm (tối đa 5 ảnh, mỗi ảnh ≤ 5MB)
+                  </label>
+
+                  <label
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      padding: '9px 14px',
+                      borderRadius: 10,
+                      border: '1px dashed #2E7D32',
+                      background: '#F4F9F5',
+                      color: '#2E7D32',
+                      fontSize: 13,
+                      fontWeight: 600,
+                      cursor: selectedImages.length >= 5 ? 'not-allowed' : 'pointer',
+                      opacity: selectedImages.length >= 5 ? 0.6 : 1,
+                    }}
+                  >
+                    <ImagePlus size={16} />
+                    <span>Chọn ảnh tải lên ({selectedImages.length}/5)</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      multiple
+                      disabled={selectedImages.length >= 5}
+                      onChange={handleSelectFiles}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+
+                  {selectedImages.length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 10 }}>
+                      {selectedImages.map((img, idx) => (
+                        <div
+                          key={img.previewUrl}
+                          style={{
+                            position: 'relative',
+                            width: 88,
+                            height: 88,
+                            borderRadius: 10,
+                            overflow: 'hidden',
+                            border: '1px solid #CBD5E1',
+                          }}
+                        >
+                          <img
+                            src={img.previewUrl}
+                            alt=""
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveImage(idx)}
+                            aria-label="Xóa ảnh"
+                            style={{
+                              position: 'absolute',
+                              top: 4,
+                              right: 4,
+                              width: 22,
+                              height: 22,
+                              borderRadius: '50%',
+                              border: 'none',
+                              background: 'rgba(15, 23, 42, 0.75)',
+                              color: '#FFFFFF',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <X size={12} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 <div style={{ display: 'flex', gap: 10, marginTop: 6 }}>
                   <button
                     type="submit"
@@ -236,7 +350,7 @@ export default function CreateItemPage() {
                       cursor: submitting ? 'not-allowed' : 'pointer',
                     }}
                   >
-                    {submitting ? 'Đang lưu lên Supabase...' : 'Đăng tin ngay'}
+                    {submitting ? 'Đang lưu tin & ảnh...' : 'Đăng tin ngay'}
                   </button>
                   <Link
                     to="/search"

@@ -76,7 +76,6 @@ export default function HomePage() {
                 type="text"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
-                placeholder="Tìm kiếm đồ thất lạc (ví dụ: ví, laptop, thẻ sinh viên...)"
               />
               <button type="submit" className="p01-btn-hero-search" style={{ border: 'none', cursor: 'pointer' }}>
                 Tìm kiếm

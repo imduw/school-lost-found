@@ -1,3 +1,4 @@
+import { resolveUploadUrl } from '../services/apiClient'
 import itemWallet from '../assets/explore/item-wallet.png'
 import itemAirpods from '../assets/explore/item-airpods.png'
 import itemCard from '../assets/explore/item-card.png'
@@ -13,6 +14,9 @@ const SLUG_IMAGE_MAP = {
 }
 
 export function getItemThumbnail(item) {
+  if (item?.images && item.images.length > 0 && item.images[0].storageUrl) {
+    return resolveUploadUrl(item.images[0].storageUrl)
+  }
   const slug = item?.category?.slug || ''
   return SLUG_IMAGE_MAP[slug] || itemBackpack
 }
