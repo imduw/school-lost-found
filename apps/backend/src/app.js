@@ -1,4 +1,3 @@
-const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const pool = require('./config/db');
@@ -10,20 +9,16 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 2. Route trang chủ mặc định & trang Test Sandbox giao diện thô
+// 2. Route trang chủ mặc định kiểm tra API server
 app.get('/', (req, res) => {
   res.status(200).json({
     success: true,
     data: {
       message: 'School Lost & Found API Server is running',
       healthCheck: '/api/v1/health',
-      testUI: '/test',
+      apiPrefix: '/api/v1',
     },
   });
-});
-
-app.get('/test', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/test-ui.html'));
 });
 
 // 3. Endpoint kiểm tra trạng thái server & database (Health Check)

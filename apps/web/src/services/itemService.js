@@ -1,57 +1,74 @@
-import { mockItems } from '../data/mock/items.mock'
-import { mockCategories } from '../data/mock/categories.mock'
-import { mockLocations } from '../data/mock/locations.mock'
+import apiClient, { getApiErrorMessage } from './apiClient'
 
 export const itemService = {
+  async checkHealth() {
+    try {
+      const res = await apiClient.get('/health')
+      return res.data.data
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, 'Backend chưa phản hồi'), { cause: error })
+    }
+  },
+
   async getCategories() {
-    return [...mockCategories]
+    try {
+      const res = await apiClient.get('/categories')
+      return res.data.data || []
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, 'Không thể tải danh mục'), { cause: error })
+    }
   },
 
-  async getLocations() {
-    return [...mockLocations]
-  },
+  async getItems({ type = 'ALL', categoryId = 'all', location = '', keyword = '', mine = false, status = '' } = {}) {
+    try {
+      const params = {}
+      if (type && type !== 'ALL' && type !== 'all') params.type = type
+      if (categoryId && categoryId !== 'all') params.categoryId = categoryId
+      if (location && location.trim()) params.location = location.trim()
+      if (keyword && keyword.trim()) params.keyword = keyword.trim()
+      if (mine) params.mine = true
+      if (status) params.status = status
 
-  async getItems({ type = 'ALL', categoryId = 'all', locationId = 'all', keyword = '', sort = 'newest' } = {}) {
-    // Giả lập độ trễ mạng nhẹ 150ms
-    await new Promise(resolve => setTimeout(resolve, 150))
-
-    let result = [...mockItems]
-
-    if (type !== 'ALL') {
-      result = result.filter(item => item.itemType === type)
+      const res = await apiClient.get('/items', { params })
+      return res.data.data || []
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, 'Không thể tải danh sách tin'), { cause: error })
     }
-
-    if (categoryId && categoryId !== 'all') {
-      result = result.filter(item => item.categoryId === categoryId)
-    }
-
-    if (locationId && locationId !== 'all') {
-      result = result.filter(item => {
-        const loc = mockLocations.find(l => l.id === locationId)
-        return loc ? item.location.toLowerCase().includes(loc.name.toLowerCase().split('(')[0].trim()) : true
-      })
-    }
-
-    if (keyword.trim()) {
-      const q = keyword.toLowerCase().trim()
-      result = result.filter(item =>
-        item.title.toLowerCase().includes(q) ||
-        item.description.toLowerCase().includes(q) ||
-        item.location.toLowerCase().includes(q)
-      )
-    }
-
-    if (sort === 'newest') {
-      result.sort((a, b) => b.id - a.id)
-    }
-
-    return result
   },
 
   async getItemById(id) {
-    await new Promise(resolve => setTimeout(resolve, 100))
-    const item = mockItems.find(i => i.id === Number(id))
-    return item || null
-  }
-}
+    try {
+      const res = await apiClient.get(`/items/${id}`)
+      return res.data.data
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, 'Không thể tải chi tiết tin'), { cause: error })
+    }
+  },
 
+  async createItem(payload) {
+    try {
+      const res = await apiClient.post('/items', payload)
+      return res.data.data
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, 'Không thể đăng tin mới'), { cause: error })
+    }
+  },
+
+  async updateItem(id, payload) {
+    try {
+      const res = await apiClient.put(`/items/${id}`, payload)
+      return res.data.data
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, 'Không thể cập nhật tin đăng'), { cause: error })
+    }
+  },
+
+  async resolveItem(id) {
+    try {
+      const res = await apiClient.patch(`/items/${id}/resolve`)
+      return res.data.data
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, 'Không thể đánh dấu đã tìm thấy'), { cause: error })
+    }
+  },
+}
