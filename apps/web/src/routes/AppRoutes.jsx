@@ -4,6 +4,7 @@ import ExploreItemsPage from '../pages/public/ExploreItemsPage'
 import ItemDetailPage from '../pages/public/ItemDetailPage'
 import AuthPage from '../pages/public/AuthPage'
 import CreateItemPage from '../pages/public/CreateItemPage'
+import MyClaimsPage from '../pages/public/MyClaimsPage'
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage'
 import UserManagementPage from '../pages/admin/UserManagementPage'
 import CategoryManagementPage from '../pages/admin/CategoryManagementPage'
@@ -22,6 +23,7 @@ export default function AppRoutes() {
       <Route path="/search" element={<ExploreItemsPage />} />
       <Route path="/items" element={<ExploreItemsPage />} />
       <Route path="/items/new" element={<CreateItemPage />} />
+      <Route path="/my-claims" element={<MyClaimsPage />} />
       <Route path="/items/detail" element={<ItemDetailPage />} />
       <Route path="/items/:id" element={<ItemDetailPage />} />
       <Route path="/item/:id" element={<ItemDetailPage />} />

@@ -51,7 +51,8 @@ app.get('/api/v1/health', async (req, res) => {
 // 3. Gắn các cụm API Routes
 app.use('/api/v1/auth', require('./routes/auth.routes'));
 app.use('/api/v1', require('./routes/item.routes'));
-// app.use('/api/v1', require('./routes/claim.routes'));
+app.use('/api/v1', require('./routes/claim.routes'));
+app.use('/api/v1/admin', require('./routes/admin.routes'));
 
 // 4. Xử lý 404 khi gọi sai đường dẫn (Tương thích Express 5)
 app.use((req, res) => {

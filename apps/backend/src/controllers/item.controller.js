@@ -121,7 +121,7 @@ const getCategories = async (req, res) => {
  */
 const getItems = async (req, res) => {
   try {
-    const { keyword, type, categoryId, location, status, mine } = req.query;
+    const { keyword, type, categoryId, location, status, publicationStatus, mine } = req.query;
 
     const conditions = ['i.deleted_at IS NULL'];
     const params = [];
@@ -143,6 +143,19 @@ const getItems = async (req, res) => {
       params.push(req.user.id);
     } else if (!isStaff(req.user)) {
       conditions.push(`i.publication_status = 'APPROVED'`);
+    } else if (publicationStatus && publicationStatus.trim() !== '') {
+      const normalizedPub = publicationStatus.trim().toUpperCase();
+      if (!['PENDING_REVIEW', 'APPROVED', 'HIDDEN', 'REJECTED'].includes(normalizedPub)) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'publicationStatus chỉ chấp nhận PENDING_REVIEW, APPROVED, HIDDEN hoặc REJECTED',
+          },
+        });
+      }
+      conditions.push(`i.publication_status = $${paramIndex++}`);
+      params.push(normalizedPub);
     }
 
     if (keyword && keyword.trim() !== '') {
@@ -984,6 +997,129 @@ const resolveLostItem = async (req, res) => {
   }
 };
 
+/**
+ * PATCH /api/v1/items/:id/visibility
+ * Chỉ Admin/Moderator được phép ẩn (HIDDEN), duyệt (APPROVED) hoặc từ chối (REJECTED) tin kèm lý do
+ * Không làm thay đổi business_status (VD: tin đã CLOSED giữ nguyên trạng thái CLOSED khi khôi phục)
+ */
+const updateItemVisibility = async (req, res) => {
+  let client;
+  try {
+    const itemId = Number(req.params.id);
+    if (!Number.isInteger(itemId) || itemId <= 0) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'ID tin đăng không hợp lệ',
+        },
+      });
+    }
+
+    const { publicationStatus, status, reason } = req.body || {};
+    const targetStatus = (publicationStatus || status || '').trim().toUpperCase();
+
+    if (!['APPROVED', 'HIDDEN', 'REJECTED'].includes(targetStatus)) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'publicationStatus chỉ chấp nhận APPROVED, HIDDEN hoặc REJECTED',
+        },
+      });
+    }
+
+    const cleanReason = reason ? String(reason).trim() : '';
+    if ((targetStatus === 'HIDDEN' || targetStatus === 'REJECTED') && !cleanReason) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Vui lòng nhập lý do khi ẩn hoặc từ chối tin đăng',
+        },
+      });
+    }
+
+    client = await pool.connect();
+    await client.query('BEGIN');
+
+    const existingResult = await client.query('SELECT * FROM items WHERE id = $1 AND deleted_at IS NULL FOR UPDATE', [
+      itemId,
+    ]);
+
+    if (existingResult.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({
+        success: false,
+        error: {
+          code: 'ITEM_NOT_FOUND',
+          message: 'Không tìm thấy tin đăng',
+        },
+      });
+    }
+
+    await client.query(`UPDATE items SET publication_status = $1 WHERE id = $2`, [targetStatus, itemId]);
+
+    const actionMap = {
+      HIDDEN: 'HIDE_ITEM',
+      APPROVED: 'RESTORE_ITEM',
+      REJECTED: 'REJECT_ITEM',
+    };
+
+    const detailsText =
+      cleanReason || `Cập nhật trạng thái hiển thị sang ${targetStatus}`;
+
+    await client.query(
+      `
+      INSERT INTO audit_logs (actor_id, action, target_type, target_id, details, ip_address)
+      VALUES ($1, $2, 'ITEM', $3, $4, $5)
+      `,
+      [req.user.id, actionMap[targetStatus], itemId, detailsText, req.ip || null]
+    );
+
+    await client.query('COMMIT');
+
+    const updatedResult = await pool.query(
+      `
+      SELECT 
+        i.*,
+        u.full_name AS author_name,
+        u.student_id AS author_student_id,
+        c.name AS category_name,
+        c.slug AS category_slug
+      FROM items i
+      INNER JOIN users u ON i.user_id = u.id
+      INNER JOIN categories c ON i.category_id = c.id
+      WHERE i.id = $1
+      `,
+      [itemId]
+    );
+
+    const [formattedItem] = await attachImagesToItems(updatedResult.rows, req.user);
+
+    return res.status(200).json({
+      success: true,
+      data: formattedItem,
+    });
+  } catch (error) {
+    if (client) {
+      await client.query('ROLLBACK').catch(() => {});
+    }
+    console.error('Update item visibility error:', error);
+    return res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Lỗi hệ thống khi cập nhật trạng thái hiển thị tin',
+      },
+    });
+  } finally {
+    if (client) {
+      client.release();
+    }
+  }
+};
+
 module.exports = {
   getCategories,
   getItems,
@@ -993,4 +1129,5 @@ module.exports = {
   deleteItemImage,
   updateItem,
   resolveLostItem,
+  updateItemVisibility,
 };

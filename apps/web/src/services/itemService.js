@@ -19,7 +19,15 @@ export const itemService = {
     }
   },
 
-  async getItems({ type = 'ALL', categoryId = 'all', location = '', keyword = '', mine = false, status = '' } = {}) {
+  async getItems({
+    type = 'ALL',
+    categoryId = 'all',
+    location = '',
+    keyword = '',
+    mine = false,
+    status = '',
+    publicationStatus = '',
+  } = {}) {
     try {
       const params = {}
       if (type && type !== 'ALL' && type !== 'all') params.type = type
@@ -28,6 +36,7 @@ export const itemService = {
       if (keyword && keyword.trim()) params.keyword = keyword.trim()
       if (mine) params.mine = true
       if (status) params.status = status
+      if (publicationStatus) params.publicationStatus = publicationStatus
 
       const res = await apiClient.get('/items', { params })
       return res.data.data || []
@@ -106,6 +115,18 @@ export const itemService = {
       return res.data.data
     } catch (error) {
       throw new Error(getApiErrorMessage(error, 'Không thể đánh dấu đã tìm thấy'), { cause: error })
+    }
+  },
+
+  async updateItemVisibility(id, { publicationStatus, reason = '' }) {
+    try {
+      const res = await apiClient.patch(`/items/${id}/visibility`, {
+        publicationStatus,
+        reason,
+      })
+      return res.data.data
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, 'Không thể cập nhật trạng thái hiển thị tin đăng'), { cause: error })
     }
   },
 }
