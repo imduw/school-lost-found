@@ -1,14 +1,18 @@
 # CLAUDE.md
 
-> Tệp này dành cho Claude Code khi làm việc trong repo. Nội dung chi tiết đầy đủ nằm ở [AGENTS.md](./AGENTS.md) — Claude Code nên đọc file đó trước.
+> Instructions for Claude Code when working in this repository. **Always read [AGENTS.md](./AGENTS.md) first** — it is the single source of truth for all project rules and workflows.
 
-## Tóm tắt nhanh
+## Quick Summary
 
-- Đây là repo **tài liệu quản trị dự án** (môn Quản trị dự án phần mềm, đề tài "School Lost & Found"), không phải source code sản phẩm.
-- Commit message bắt buộc theo format: `[GiaiDoan] loai: mo ta` (xem AGENTS.md để biết danh sách GiaiDoan/loai hợp lệ) — có git hook `commit-msg` chặn nếu sai.
-- Không commit thẳng vào `main` — luôn tạo nhánh `feature/...`.
-- Trước khi tạo/sửa file, kiểm tra đã đúng thư mục giai đoạn trong `docs/` chưa.
-- Nếu người dùng nhờ "commit giúp", Claude Code nên: tạo nhánh nếu đang ở `main`, soạn message đúng format, rồi mới `git commit`.
-- Trả lời bằng tiếng Việt trừ khi được yêu cầu khác.
+- **Monorepo Architecture (Code + Docs):** This repository contains **both** the application source code (`apps/web/` React + Vite, `apps/backend/` Node.js + Express, `database/` PostgreSQL/Supabase) **and** the Software Project Management documentation (`docs/`, `meeting-notes/`).
+- **No Duplicate Config Rule:** Use the **single root `.gitignore`** only. Never create nested `.gitignore` files, stray `.env` templates, or lock files inside `apps/web/` or `apps/backend/`. Never commit real `.env` secrets.
+- **API Contract Rule:**
+  - Every backend endpoint under `/api/v1/...` must return `{ success: true, data }` or `{ success: false, error: { code, message } }`.
+  - Frontend components must **never** use hardcoded mock data or hardcode `http://localhost:5000`; all HTTP requests must go through `apps/web/src/services/apiClient.js`.
+- **Workflow Skills:** Follow `.agents/skills/backend-api-standard/SKILL.md` for backend work and `.agents/skills/frontend-api-integration/SKILL.md` for frontend integration.
+- **Git & Commit Rules (Hook Enforced):**
+  - Never commit directly to `main`/`master` — create a `feature/<description>` branch first.
+  - Commit messages must strictly match: `[GiaiDoan] loai: mo ta` (minimum 10 characters after `[GiaiDoan]`), where `GiaiDoan` is `Init | Planning | Requirements | Design | Execution | Monitoring | Closing` and `loai` is `feat | docs | fix | chore | refactor | test | wip`.
+- **Response Language:** Reply to the user in Vietnamese unless requested otherwise.
 
-Xem đầy đủ quy tắc tại [AGENTS.md](./AGENTS.md) và quy trình nhóm tại [CONTRIBUTING.md](./CONTRIBUTING.md).
+See full engineering rules in [AGENTS.md](./AGENTS.md) and team workflow in [CONTRIBUTING.md](./CONTRIBUTING.md).
