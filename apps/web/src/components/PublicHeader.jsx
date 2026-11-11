@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router'
-import { Home, Search, PlusCircle, Shield, LogOut } from 'lucide-react'
+import { Home, Search, PlusCircle, Shield, LogOut, Send } from 'lucide-react'
 import logoSrc from '../assets/svg/logo/school-lost-found-logo.svg'
 import { useAuth } from '../contexts/useAuth'
 
@@ -23,6 +23,7 @@ export default function PublicHeader() {
   const isHome = location.pathname === '/'
   const isSearch = location.pathname.startsWith('/search') || location.pathname === '/items'
   const isCreate = location.pathname === '/items/new'
+  const isMyClaims = location.pathname === '/my-claims'
 
   return (
     <header className="p01-header">
@@ -43,6 +44,12 @@ export default function PublicHeader() {
             <PlusCircle size={15} />
             <span>Đăng tin</span>
           </Link>
+          {isAuthenticated && (
+            <Link to="/my-claims" className={isMyClaims ? 'p01-header-nav-pill' : 'a01-nav-link'}>
+              <Send size={15} />
+              <span>Yêu cầu của tôi</span>
+            </Link>
+          )}
         </nav>
       </div>
 

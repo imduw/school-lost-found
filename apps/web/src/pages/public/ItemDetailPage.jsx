@@ -2,14 +2,17 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import {
   MapPin, Calendar, Tag, ArrowRight,
-  Send, ShieldCheck, Flag, Sparkles, Bookmark,
+  Send, ShieldCheck, Sparkles, Bookmark,
   Package, User, Edit3, CheckCircle, AlertCircle, ImagePlus, Trash2,
+  Eye, EyeOff, Undo2, Paperclip, X, Maximize2,
 } from 'lucide-react'
 import PublicHeader from '../../components/PublicHeader'
+import { ConfirmDialog, ImageLightboxDialog, ReasonDialog } from '../../components/ActionDialogs'
 import { useAuth } from '../../contexts/useAuth'
 import { resolveUploadUrl } from '../../services/apiClient'
 import { itemService } from '../../services/itemService'
-import { getItemThumbnail, formatShortDate } from '../../utils/itemImageHelper'
+import { claimService } from '../../services/claimService'
+import { getItemThumbnail, formatShortDate, formatDateTime } from '../../utils/itemImageHelper'
 import claimBoxMascot from '../../assets/detail/claim-box-mascot.png'
 import './Home.css'
 import './ExploreItems.css'
@@ -33,6 +36,22 @@ export default function ItemDetailPage() {
   const [editDesc, setEditDesc] = useState('')
   const [saving, setSaving] = useState(false)
   const [uploadingImg, setUploadingImg] = useState(false)
+
+  // Phase 2: Claim & Proof Privacy state
+  const [myClaim, setMyClaim] = useState(null)
+  const [claimFormOpen, setClaimFormOpen] = useState(false)
+  const [proofType, setProofType] = useState('DESCRIPTION')
+  const [proofContent, setProofContent] = useState('')
+  const [proofFiles, setProofFiles] = useState([])
+  const [submittingClaim, setSubmittingClaim] = useState(false)
+  const [claimFeedback, setClaimFeedback] = useState({ type: '', text: '' })
+  const [withdrawOpen, setWithdrawOpen] = useState(false)
+  const [withdrawing, setWithdrawing] = useState(false)
+
+  // Phase 2: Staff quick moderation & image preview dialogs
+  const [hideDialogOpen, setHideDialogOpen] = useState(false)
+  const [moderating, setModerating] = useState(false)
+  const [lightboxUrl, setLightboxUrl] = useState('')
 
   useEffect(() => {
     let cancelled = false
@@ -73,6 +92,39 @@ export default function ItemDetailPage() {
       cancelled = true
     }
   }, [itemId])
+
+  useEffect(() => {
+    let cancelled = false
+    if (!isAuthenticated) {
+      Promise.resolve().then(() => {
+        if (!cancelled) setMyClaim(null)
+      })
+      return () => {
+        cancelled = true
+      }
+    }
+
+    claimService
+      .getMyClaims()
+      .then((list) => {
+        if (!cancelled) {
+          const matching = list.filter((c) => String(c.itemId) === String(itemId))
+          const activeOrLatest =
+            matching.find((c) => c.status === 'PENDING') ||
+            matching.find((c) => c.status === 'ACCEPTED') ||
+            matching[0] ||
+            null
+          setMyClaim(activeOrLatest)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setMyClaim(null)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [itemId, isAuthenticated])
 
   const isOwner = isAuthenticated && item && Number(currentUser.id) === Number(item.userId)
   const isStaff = isAuthenticated && ['ADMIN', 'MODERATOR'].includes(currentUser.role)
@@ -155,6 +207,401 @@ export default function ItemDetailPage() {
     }
   }
 
+  const handleProofFilesChange = (e) => {
+    const selected = Array.from(e.target.files || [])
+    e.target.value = ''
+    if (selected.length === 0) return
+    setProofFiles((prev) => [...prev, ...selected].slice(0, 5))
+  }
+
+  const handleSubmitClaim = async (e) => {
+    e.preventDefault()
+    if (!item) return
+
+    if (!proofContent.trim() && proofFiles.length === 0) {
+      setClaimFeedback({
+        type: 'error',
+        text: 'Vui lòng nhập mô tả bằng chứng hoặc đính kèm ít nhất 1 ảnh minh chứng.',
+      })
+      return
+    }
+
+    setSubmittingClaim(true)
+    setClaimFeedback({ type: '', text: '' })
+    try {
+      const createdClaim = await claimService.createClaim(item.id, {
+        proofType,
+        proofContent,
+        files: proofFiles,
+      })
+      setMyClaim(createdClaim)
+      setProofContent('')
+      setProofFiles([])
+      setClaimFormOpen(false)
+      setClaimFeedback({
+        type: 'success',
+        text: `Đã gửi yêu cầu #CLM-${createdClaim.id}. Bằng chứng của bạn được bảo mật riêng tư để cán bộ đối chiếu.`,
+      })
+    } catch (err) {
+      setClaimFeedback({ type: 'error', text: err.message })
+    } finally {
+      setSubmittingClaim(false)
+    }
+  }
+
+  const handleWithdrawClaim = async () => {
+    if (!myClaim) return
+    setWithdrawing(true)
+    setClaimFeedback({ type: '', text: '' })
+    try {
+      const updated = await claimService.withdrawClaim(myClaim.id)
+      setMyClaim(updated)
+      setWithdrawOpen(false)
+      setClaimFeedback({ type: 'success', text: `Đã rút yêu cầu #CLM-${updated.id}.` })
+    } catch (err) {
+      setClaimFeedback({ type: 'error', text: err.message })
+    } finally {
+      setWithdrawing(false)
+    }
+  }
+
+  const handleHideItem = async (reason) => {
+    if (!item) return
+    setModerating(true)
+    setActionMsg('')
+    try {
+      const updated = await itemService.updateItemVisibility(item.id, {
+        publicationStatus: 'HIDDEN',
+        reason,
+      })
+      setItem(updated)
+      setHideDialogOpen(false)
+      setActionMsg('✅ Đã ẩn tin đăng (HIDDEN) khỏi danh sách công khai.')
+    } catch (err) {
+      setActionMsg(`❌ ${err.message}`)
+    } finally {
+      setModerating(false)
+    }
+  }
+
+  const handleRestoreItem = async () => {
+    if (!item) return
+    setModerating(true)
+    setActionMsg('')
+    try {
+      const updated = await itemService.updateItemVisibility(item.id, {
+        publicationStatus: 'APPROVED',
+        reason: 'Khôi phục hiển thị công khai từ trang chi tiết',
+      })
+      setItem(updated)
+      setActionMsg('✅ Đã khôi phục hiển thị tin đăng (APPROVED).')
+    } catch (err) {
+      setActionMsg(`❌ ${err.message}`)
+    } finally {
+      setModerating(false)
+    }
+  }
+
+  const renderRightClaimPanel = () => {
+    if (!item) return null
+
+    if (item.itemType === 'LOST') {
+      return (
+        <div className="p03-cta-card">
+          <img src={claimBoxMascot} alt="" className="p03-cta-mascot-img" />
+          <h3 className="p03-cta-title">Bạn nhặt được món đồ này?</h3>
+          <p className="p03-cta-desc">
+            Đây là tin Báo mất (LOST). Hãy đăng tin Nhặt được (FOUND) hoặc liên hệ Phòng Công tác sinh viên để hỗ trợ bàn giao cho chủ nhân.
+          </p>
+          <Link
+            to="/items/new?type=FOUND"
+            className="p03-btn-send-claim"
+            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+          >
+            <Send size={14} />
+            <span>Đăng tin nhặt được (FOUND)</span>
+          </Link>
+        </div>
+      )
+    }
+
+    if (!isAuthenticated) {
+      return (
+        <div className="p03-cta-card">
+          <img src={claimBoxMascot} alt="" className="p03-cta-mascot-img" />
+          <h3 className="p03-cta-title">Bạn là chủ nhân của món đồ?</h3>
+          <p className="p03-cta-desc">
+            Đăng nhập bằng tài khoản sinh viên VKU để gửi bằng chứng riêng tư (Proof Privacy) nhận lại đồ thất lạc.
+          </p>
+          <Link
+            to="/login"
+            className="p03-btn-send-claim"
+            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+          >
+            <Send size={14} />
+            <span>Đăng nhập để gửi yêu cầu</span>
+          </Link>
+        </div>
+      )
+    }
+
+    if (isOwner) {
+      return (
+        <div className="p03-cta-card">
+          <img src={claimBoxMascot} alt="" className="p03-cta-mascot-img" />
+          <h3 className="p03-cta-title">Tin đăng do bạn tạo</h3>
+          <p className="p03-cta-desc">
+            Bằng chứng của người đến nhận đồ sẽ được bảo mật riêng tư để Cán bộ hỗ trợ đối chiếu và xác nhận bàn giao.
+          </p>
+        </div>
+      )
+    }
+
+    return (
+      <div className="p03-cta-card">
+        <img src={claimBoxMascot} alt="" className="p03-cta-mascot-img" />
+        <h3 className="p03-cta-title">Bạn là chủ nhân của món đồ?</h3>
+        <p className="p03-cta-desc">
+          Mọi bằng chứng bạn gửi (mô tả đặc điểm, serial, ảnh minh chứng) chỉ bạn và Cán bộ hỗ trợ được phép xem.
+        </p>
+
+        {claimFeedback.text && (
+          <div
+            role="status"
+            aria-live="polite"
+            className={`slf-banner-feedback ${claimFeedback.type === 'error' ? 'slf-banner-error' : 'slf-banner-success'}`}
+            style={{ width: '100%', textAlign: 'left', marginBottom: 10 }}
+          >
+            <span>{claimFeedback.text}</span>
+          </div>
+        )}
+
+        {myClaim && (
+          <div
+            style={{
+              width: '100%',
+              background: '#FAF8F5',
+              border: '1px solid #E5DED2',
+              borderRadius: 12,
+              padding: 12,
+              textAlign: 'left',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+              marginBottom: 10,
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+              <strong style={{ fontSize: 13, color: '#2E7D32' }}>Yêu cầu #CLM-{myClaim.id}</strong>
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 700,
+                  padding: '2px 8px',
+                  borderRadius: 999,
+                  background:
+                    myClaim.status === 'ACCEPTED'
+                      ? '#DCFCE7'
+                      : myClaim.status === 'REJECTED'
+                        ? '#FEE2E2'
+                        : myClaim.status === 'WITHDRAWN'
+                          ? '#E5E7EB'
+                          : '#FEF3C7',
+                  color:
+                    myClaim.status === 'ACCEPTED'
+                      ? '#166534'
+                      : myClaim.status === 'REJECTED'
+                        ? '#991B1B'
+                        : myClaim.status === 'WITHDRAWN'
+                          ? '#374151'
+                          : '#92400E',
+                }}
+              >
+                {myClaim.status}
+              </span>
+            </div>
+
+            <div style={{ fontSize: 12, color: '#67786F' }}>Gửi lúc: {formatDateTime(myClaim.createdAt)}</div>
+
+            {(myClaim.proofs || [])
+              .filter((p) => p.proofType !== 'ATTACHMENT_URL')
+              .map((p) => (
+                <div key={p.id} style={{ fontSize: 12, color: '#34443B', wordBreak: 'break-word' }}>
+                  <strong>{p.proofType}:</strong> {p.proofContent}
+                </div>
+              ))}
+
+            {(myClaim.proofs || []).some((p) => p.proofType === 'ATTACHMENT_URL') && (
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {(myClaim.proofs || [])
+                  .filter((p) => p.proofType === 'ATTACHMENT_URL')
+                  .map((p) => {
+                    const url = resolveUploadUrl(p.proofContent)
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => setLightboxUrl(url)}
+                        style={{ width: 48, height: 48, borderRadius: 8, overflow: 'hidden', border: '1px solid #CBD5E1', padding: 0 }}
+                        title="Xem ảnh minh chứng"
+                      >
+                        <img src={url} alt="Minh chứng" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </button>
+                    )
+                  })}
+              </div>
+            )}
+
+            {myClaim.note && (
+              <div style={{ fontSize: 12, color: '#475569' }}>
+                <strong>Ghi chú:</strong> {myClaim.note}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 4 }}>
+              {myClaim.status === 'PENDING' && (
+                <button
+                  type="button"
+                  onClick={() => setWithdrawOpen(true)}
+                  className="slf-btn-danger"
+                  style={{ padding: '6px 12px', fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 5 }}
+                >
+                  <Undo2 size={12} />
+                  <span>Rút yêu cầu</span>
+                </button>
+              )}
+              <Link
+                to="/my-claims"
+                className="slf-btn-secondary"
+                style={{ padding: '6px 12px', fontSize: 12, textDecoration: 'none' }}
+              >
+                Quản lý yêu cầu của tôi
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {item.businessStatus !== 'OPEN' ? (
+          <div style={{ width: '100%', padding: '10px 12px', borderRadius: 10, background: '#F3F4F6', color: '#4B5563', fontSize: 13, fontWeight: 600 }}>
+            Tin này đang ở trạng thái {item.businessStatus}, không nhận thêm yêu cầu mới.
+          </div>
+        ) : myClaim?.status === 'PENDING' ? null : !claimFormOpen ? (
+          <button
+            type="button"
+            className="p03-btn-send-claim"
+            onClick={() => {
+              setClaimFormOpen(true)
+              setClaimFeedback({ type: '', text: '' })
+            }}
+          >
+            <Send size={14} />
+            <span>{myClaim ? 'Gửi lại yêu cầu mới' : 'Gửi yêu cầu nhận đồ'}</span>
+          </button>
+        ) : (
+          <form onSubmit={handleSubmitClaim} style={{ width: '100%', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div>
+              <label htmlFor="claim-proof-type" style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 4 }}>
+                Loại bằng chứng đối chiếu
+              </label>
+              <select
+                id="claim-proof-type"
+                value={proofType}
+                onChange={(e) => setProofType(e.target.value)}
+                style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid #CBD5E1', background: '#fff' }}
+              >
+                <option value="DESCRIPTION">Mô tả đặc điểm nhận dạng</option>
+                <option value="SERIAL_NUMBER">Số Serial / IMEI / Mã thẻ</option>
+                <option value="CONTACT">Thông tin liên hệ xác minh</option>
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="claim-proof-content" style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 4 }}>
+                Nội dung bằng chứng riêng tư
+              </label>
+              <textarea
+                id="claim-proof-content"
+                rows={3}
+                value={proofContent}
+                onChange={(e) => setProofContent(e.target.value)}
+                style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid #CBD5E1', resize: 'vertical' }}
+              />
+            </div>
+
+            <div>
+              <label
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '7px 12px',
+                  borderRadius: 8,
+                  border: '1px dashed #2E7D32',
+                  background: '#F4F9F5',
+                  color: '#2E7D32',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                <Paperclip size={13} />
+                <span>Đính kèm ảnh minh chứng ({proofFiles.length}/5)</span>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  multiple
+                  onChange={handleProofFilesChange}
+                  style={{ display: 'none' }}
+                />
+              </label>
+
+              {proofFiles.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 6 }}>
+                  {proofFiles.map((file, idx) => (
+                    <div
+                      key={`${file.name}-${idx}`}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 12, background: '#F8FAFC', padding: '4px 8px', borderRadius: 6, border: '1px solid #E2E8F0' }}
+                    >
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 190 }}>{file.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => setProofFiles((prev) => prev.filter((_, i) => i !== idx))}
+                        aria-label={`Bỏ ảnh ${file.name}`}
+                        style={{ color: '#DC2626', display: 'inline-flex', padding: 2 }}
+                      >
+                        <X size={13} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+              <button
+                type="submit"
+                disabled={submittingClaim}
+                className="p03-btn-send-claim"
+                style={{ flex: 1, marginTop: 0 }}
+              >
+                <Send size={14} />
+                <span>{submittingClaim ? 'Đang gửi...' : 'Gửi bằng chứng'}</span>
+              </button>
+              <button
+                type="button"
+                disabled={submittingClaim}
+                onClick={() => setClaimFormOpen(false)}
+                className="slf-btn-secondary"
+              >
+                Hủy
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div className="p03-page-wrapper">
       <PublicHeader />
@@ -192,8 +639,28 @@ export default function ItemDetailPage() {
             {/* Left Card: Item Info & Gallery */}
             <div className="p03-main-card">
               <div className="p03-gallery-col">
-                <div className="p03-main-photo-wrap">
+                <div className="p03-main-photo-wrap" style={{ position: 'relative' }}>
                   <img src={mainPhotoSrc} alt={item.title} className="p03-main-photo" style={{ objectFit: 'cover' }} />
+                  <button
+                    type="button"
+                    onClick={() => setLightboxUrl(mainPhotoSrc)}
+                    aria-label="Phóng to ảnh"
+                    style={{
+                      position: 'absolute',
+                      bottom: 10,
+                      right: 10,
+                      width: 32,
+                      height: 32,
+                      borderRadius: 8,
+                      background: 'rgba(15, 23, 42, 0.65)',
+                      color: '#fff',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Maximize2 size={15} />
+                  </button>
                 </div>
 
                 {uploadedImages.length > 0 && (
@@ -440,21 +907,48 @@ export default function ItemDetailPage() {
 
             {/* Right Column */}
             <div className="p03-side-col">
-              <div className="p03-cta-card">
-                <img src={claimBoxMascot} alt="" className="p03-cta-mascot-img" />
-                <h3 className="p03-cta-title">Bạn là chủ nhân của món đồ?</h3>
-                <p className="p03-cta-desc">
-                  Tính năng gửi yêu cầu nhận đồ kèm bằng chứng riêng sẽ được mở ở API Đợt 2 (LF-12).
-                </p>
-                <button
-                  type="button"
-                  className="p03-btn-send-claim"
-                  onClick={() => alert('Chức năng Gửi Claim bảo mật Proof đang được hoàn thiện ở Đợt 2 (LF-12)!')}
-                >
-                  <Send size={14} />
-                  <span>Gửi yêu cầu nhận đồ</span>
-                </button>
-              </div>
+              {renderRightClaimPanel()}
+
+              {isStaff && (
+                <div className="p03-poster-card" style={{ gap: 10 }}>
+                  <span className="p03-card-heading">Kiểm duyệt nhanh (Staff / Admin)</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {item.publicationStatus === 'APPROVED' ? (
+                      <button
+                        type="button"
+                        disabled={moderating}
+                        onClick={() => setHideDialogOpen(true)}
+                        className="slf-btn-danger"
+                        style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+                      >
+                        <EyeOff size={14} />
+                        <span>Ẩn tin đăng (HIDDEN)</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled={moderating}
+                        onClick={handleRestoreItem}
+                        className="slf-btn-primary"
+                        style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+                      >
+                        <Eye size={14} />
+                        <span>Khôi phục hiển thị (APPROVED)</span>
+                      </button>
+                    )}
+
+                    {item.itemType === 'FOUND' && (
+                      <Link
+                        to={`/staff/claims?itemId=${item.id}`}
+                        className="slf-btn-secondary"
+                        style={{ width: '100%', textAlign: 'center', textDecoration: 'none' }}
+                      >
+                        Xem các yêu cầu nhận đồ
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )}
 
               <div className="p03-poster-card">
                 <span className="p03-card-heading">Thông tin người đăng</span>
@@ -471,11 +965,6 @@ export default function ItemDetailPage() {
                   </div>
                 </div>
               </div>
-
-              <a href="#report" className="p03-report-card" onClick={(e) => e.preventDefault()}>
-                <Flag size={14} />
-                <span>Báo cáo vi phạm</span>
-              </a>
             </div>
           </div>
         ) : null}
@@ -541,6 +1030,35 @@ export default function ItemDetailPage() {
           </section>
         )}
       </main>
+
+      <ConfirmDialog
+        open={withdrawOpen}
+        title="Rút yêu cầu nhận đồ"
+        message={`Bạn muốn rút yêu cầu #CLM-${myClaim?.id || ''}? Sau khi rút, bạn có thể gửi lại yêu cầu mới nếu món đồ vẫn đang mở.`}
+        confirmLabel="Rút yêu cầu"
+        danger
+        submitting={withdrawing}
+        onClose={() => setWithdrawOpen(false)}
+        onConfirm={handleWithdrawClaim}
+      />
+
+      <ReasonDialog
+        key={`hide-detail-${item?.id || 'none'}`}
+        open={hideDialogOpen}
+        title="Ẩn tin đăng khỏi bảng tin công khai"
+        description="Trạng thái nghiệp vụ (OPEN/CLOSED) của tin vẫn được giữ nguyên; chỉ người đăng và cán bộ mới thấy tin này."
+        fieldLabel="Lý do ẩn tin"
+        confirmLabel="Xác nhận ẩn tin"
+        submitting={moderating}
+        onClose={() => setHideDialogOpen(false)}
+        onConfirm={handleHideItem}
+      />
+
+      <ImageLightboxDialog
+        imageUrl={lightboxUrl}
+        title={item?.title || 'Xem ảnh'}
+        onClose={() => setLightboxUrl('')}
+      />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const itemController = require('../controllers/item.controller');
-const { verifyToken, optionalAuth } = require('../middlewares/auth.middleware');
+const { verifyToken, optionalAuth, requireRole } = require('../middlewares/auth.middleware');
 const { handleItemImageUpload } = require('../middlewares/upload.middleware');
 
 // Lấy danh sách danh mục
@@ -27,5 +27,13 @@ router.put('/items/:id', verifyToken, itemController.updateItem);
 
 // Chủ tin báo mất tự đánh dấu đã tìm thấy (OPEN -> RESOLVED)
 router.patch('/items/:id/resolve', verifyToken, itemController.resolveLostItem);
+
+// Kiểm duyệt: Chỉ Admin/Moderator được ẩn, duyệt hoặc từ chối tin
+router.patch(
+  '/items/:id/visibility',
+  verifyToken,
+  requireRole('ADMIN', 'MODERATOR'),
+  itemController.updateItemVisibility
+);
 
 module.exports = router;
