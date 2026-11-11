@@ -328,7 +328,6 @@ export default function UserManagementPage() {
                   <Search size={15} />
                   <input
                     type="text"
-                    placeholder="Tìm theo mã SV, họ tên, email..."
                   />
                 </div>
 

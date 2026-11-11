@@ -3,10 +3,11 @@ import { Link, useParams } from 'react-router'
 import {
   MapPin, Calendar, Tag, ArrowRight,
   Send, ShieldCheck, Flag, Sparkles, Bookmark,
-  Package, User, Edit3, CheckCircle, AlertCircle,
+  Package, User, Edit3, CheckCircle, AlertCircle, ImagePlus, Trash2,
 } from 'lucide-react'
 import PublicHeader from '../../components/PublicHeader'
 import { useAuth } from '../../contexts/useAuth'
+import { resolveUploadUrl } from '../../services/apiClient'
 import { itemService } from '../../services/itemService'
 import { getItemThumbnail, formatShortDate } from '../../utils/itemImageHelper'
 import claimBoxMascot from '../../assets/detail/claim-box-mascot.png'
@@ -21,6 +22,7 @@ export default function ItemDetailPage() {
 
   const [item, setItem] = useState(null)
   const [relatedItems, setRelatedItems] = useState([])
+  const [activeImageIdx, setActiveImageIdx] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [actionMsg, setActionMsg] = useState('')
@@ -30,6 +32,7 @@ export default function ItemDetailPage() {
   const [editLocation, setEditLocation] = useState('')
   const [editDesc, setEditDesc] = useState('')
   const [saving, setSaving] = useState(false)
+  const [uploadingImg, setUploadingImg] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -38,6 +41,7 @@ export default function ItemDetailPage() {
       .then((data) => {
         if (!cancelled) {
           setItem(data)
+          setActiveImageIdx(0)
           setEditTitle(data.title)
           setEditLocation(data.approximateLocation)
           setEditDesc(data.description)
@@ -71,6 +75,14 @@ export default function ItemDetailPage() {
   }, [itemId])
 
   const isOwner = isAuthenticated && item && Number(currentUser.id) === Number(item.userId)
+  const isStaff = isAuthenticated && ['ADMIN', 'MODERATOR'].includes(currentUser.role)
+  const canManageImages = Boolean(item && (isStaff || (isOwner && item.businessStatus === 'OPEN')))
+
+  const uploadedImages = item?.images || []
+  const mainPhotoSrc =
+    uploadedImages.length > 0
+      ? resolveUploadUrl(uploadedImages[Math.min(activeImageIdx, uploadedImages.length - 1)]?.storageUrl)
+      : getItemThumbnail(item)
 
   const handleSaveEdit = async (e) => {
     e.preventDefault()
@@ -103,6 +115,43 @@ export default function ItemDetailPage() {
       setActionMsg(`❌ ${err.message}`)
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleUploadMoreImages = async (e) => {
+    const files = Array.from(e.target.files || [])
+    e.target.value = ''
+    if (files.length === 0 || !item) return
+
+    setUploadingImg(true)
+    setActionMsg('')
+    try {
+      const added = await itemService.uploadItemImages(item.id, files)
+      setItem((prev) => ({
+        ...prev,
+        images: [...(prev.images || []), ...added],
+      }))
+      setActionMsg(`✅ Đã tải lên thêm ${added.length} ảnh và lưu vào database!`)
+    } catch (err) {
+      setActionMsg(`❌ ${err.message}`)
+    } finally {
+      setUploadingImg(false)
+    }
+  }
+
+  const handleDeleteImage = async (imageId) => {
+    if (!item) return
+    setActionMsg('')
+    try {
+      await itemService.deleteItemImage(item.id, imageId)
+      setItem((prev) => {
+        const nextImages = (prev.images || []).filter((img) => img.id !== imageId)
+        return { ...prev, images: nextImages }
+      })
+      setActiveImageIdx(0)
+      setActionMsg('✅ Đã xóa ảnh khỏi tin đăng!')
+    } catch (err) {
+      setActionMsg(`❌ ${err.message}`)
     }
   }
 
@@ -144,8 +193,81 @@ export default function ItemDetailPage() {
             <div className="p03-main-card">
               <div className="p03-gallery-col">
                 <div className="p03-main-photo-wrap">
-                  <img src={getItemThumbnail(item)} alt={item.title} className="p03-main-photo" />
+                  <img src={mainPhotoSrc} alt={item.title} className="p03-main-photo" style={{ objectFit: 'cover' }} />
                 </div>
+
+                {uploadedImages.length > 0 && (
+                  <div className="p03-thumbs-row" style={{ flexWrap: 'wrap' }}>
+                    {uploadedImages.map((img, idx) => (
+                      <div
+                        key={img.id}
+                        className={`p03-sub-thumb ${idx === activeImageIdx ? 'active' : ''}`}
+                        onClick={() => setActiveImageIdx(idx)}
+                        style={{ position: 'relative' }}
+                      >
+                        <img src={resolveUploadUrl(img.storageUrl)} alt="" style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
+                        {canManageImages && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleDeleteImage(img.id)
+                            }}
+                            title="Xóa ảnh"
+                            style={{
+                              position: 'absolute',
+                              top: 2,
+                              right: 2,
+                              width: 18,
+                              height: 18,
+                              borderRadius: '50%',
+                              border: 'none',
+                              background: 'rgba(185, 28, 28, 0.85)',
+                              color: '#fff',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <Trash2 size={10} />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {canManageImages && uploadedImages.length < 5 && (
+                  <label
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 6,
+                      marginTop: 10,
+                      padding: '7px 12px',
+                      borderRadius: 8,
+                      border: '1px dashed #2E7D32',
+                      background: '#F4F9F5',
+                      color: '#2E7D32',
+                      fontSize: 12,
+                      fontWeight: 600,
+                      cursor: uploadingImg ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    <ImagePlus size={14} />
+                    <span>{uploadingImg ? 'Đang tải ảnh...' : `Thêm ảnh (${uploadedImages.length}/5)`}</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      multiple
+                      disabled={uploadingImg}
+                      onChange={handleUploadMoreImages}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                )}
               </div>
 
               <div className="p03-info-col">

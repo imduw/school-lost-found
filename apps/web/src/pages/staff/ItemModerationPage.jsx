@@ -237,7 +237,7 @@ export default function ItemModerationPage() {
               <div className="m02-filter-bar">
                 <div className="m02-search-box">
                   <Search size={15} color="#8B9E94" />
-                  <input type="text" placeholder="Tìm theo tiêu đề, người đăng, mã sinh viên..." />
+                  <input type="text" />
                 </div>
                 <button className="m02-dropdown-btn">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>

@@ -225,7 +225,7 @@ export default function CategoryManagementPage() {
               <div className="a03-filter-bar">
                 <div className="a03-search-box">
                   <Search size={15} color="#8B9E94" />
-                  <input type="text" placeholder="Tìm theo tên danh mục, mô tả..." />
+                  <input type="text" />
                 </div>
                 <button className="a03-dropdown-btn">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>

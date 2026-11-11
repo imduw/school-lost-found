@@ -55,3 +55,9 @@ lerna-debug.log*
 *.bak
 ~$*
 .~lock.*
+
+# ==========================================
+# User Uploaded Media (Local Dev Storage)
+# ==========================================
+uploads/
+!uploads/.gitkeep
