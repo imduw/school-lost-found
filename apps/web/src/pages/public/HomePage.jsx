@@ -1,103 +1,59 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router'
 import {
-  Home, Search, BookOpen, CircleAlert, Bell,
-  Sparkles, Flame, Check, Bookmark, MapPin, Calendar,
+  Search, Sparkles, Flame, Check, Bookmark, MapPin, Calendar,
   ArrowRight, FileEdit, Handshake, Sprout,
 } from 'lucide-react'
-import logoSrc from '../../assets/svg/logo/school-lost-found-logo.svg'
+import PublicHeader from '../../components/PublicHeader'
+import { itemService } from '../../services/itemService'
+import { getItemThumbnail, formatShortDate } from '../../utils/itemImageHelper'
 import heroCampusMascot from '../../assets/home/hero-campus-mascot.png'
 import iconLostBackpack from '../../assets/home/icon-lost-backpack.png'
 import iconFoundBox from '../../assets/home/icon-found-box.png'
-import itemWalletDesk from '../../assets/home/item-wallet-desk.png'
-import itemAirpodsDesk from '../../assets/home/item-airpods-desk.png'
-import itemCardDesk from '../../assets/home/item-card-desk.png'
-import itemBackpackGrey from '../../assets/home/item-backpack-grey.png'
 import './Home.css'
 
 export default function HomePage() {
+  const navigate = useNavigate()
   const [activeFilter, setActiveFilter] = useState('all')
+  const [searchText, setSearchText] = useState('')
+  const [items, setItems] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  const latestItems = [
-    {
-      id: 1,
-      type: 'LOST',
-      timeAgo: '2 giờ trước',
-      img: itemWalletDesk,
-      title: 'Báo mất ví da màu đen',
-      location: 'Giảng đường V',
-      date: '10/11/2026',
-    },
-    {
-      id: 2,
-      type: 'FOUND',
-      timeAgo: '3 giờ trước',
-      img: itemAirpodsDesk,
-      title: 'Nhặt được tai nghe AirPods',
-      location: 'Thư viện tầng 2',
-      date: '10/11/2026',
-    },
-    {
-      id: 3,
-      type: 'LOST',
-      timeAgo: '5 giờ trước',
-      img: itemCardDesk,
-      title: 'Mất thẻ sinh viên',
-      location: 'Khu A - Tòa nhà chính',
-      date: '10/11/2026',
-    },
-    {
-      id: 4,
-      type: 'FOUND',
-      timeAgo: '6 giờ trước',
-      img: itemBackpackGrey,
-      title: 'Nhặt được balo màu xám',
-      location: 'Căn tin',
-      date: '10/11/2026',
-    },
-  ]
+  useEffect(() => {
+    let cancelled = false
+    const typeParam = activeFilter === 'all' ? 'ALL' : activeFilter.toUpperCase()
+    itemService
+      .getItems({ type: typeParam })
+      .then((data) => {
+        if (!cancelled) {
+          setItems(data.slice(0, 4))
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setItems([])
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [activeFilter])
 
-  const filteredItems = latestItems.filter((item) => {
-    if (activeFilter === 'lost') return item.type === 'LOST'
-    if (activeFilter === 'found') return item.type === 'FOUND'
-    return true
-  })
+  const handleSelectFilter = (filter) => {
+    setLoading(true)
+    setActiveFilter(filter)
+  }
+
+  const handleHeroSearch = (e) => {
+    e.preventDefault()
+    const q = searchText.trim()
+    navigate(q ? `/search?keyword=${encodeURIComponent(q)}` : '/search')
+  }
 
   return (
     <div className="p01-home-wrapper">
-      {/* ==================== PUBLIC HEADER ==================== */}
-      <header className="p01-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-          <a href="/" style={{ display: 'flex', alignItems: 'center' }}>
-            <img src={logoSrc} alt="School Lost & Found" style={{ height: 36 }} />
-          </a>
-          <nav style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <a href="/" className="p01-header-nav-pill">
-              <Home size={15} />
-              <span>Trang chủ</span>
-            </a>
-            <a href="/search" className="a01-nav-link">
-              <Search size={15} />
-              <span>Tìm đồ</span>
-            </a>
-            <a href="/guide" className="a01-nav-link" onClick={(e) => e.preventDefault()}>
-              <BookOpen size={15} />
-              <span>Hướng dẫn</span>
-            </a>
-            <a href="/about" className="a01-nav-link" onClick={(e) => e.preventDefault()}>
-              <CircleAlert size={15} />
-              <span>Về hệ thống</span>
-            </a>
-          </nav>
-        </div>
-
-        <div className="p01-header-right">
-          <button type="button" className="a01-bell-btn" aria-label="Thông báo">
-            <Bell size={18} />
-          </button>
-          <a href="/login" className="p01-btn-login">Đăng nhập</a>
-          <a href="/register" className="p01-btn-register">Đăng ký</a>
-        </div>
-      </header>
+      <PublicHeader />
 
       {/* ==================== MAIN CONTENT ==================== */}
       <main className="p01-main">
@@ -114,16 +70,18 @@ export default function HomePage() {
             </p>
 
             {/* Search Box */}
-            <div className="p01-hero-search-wrap">
+            <form className="p01-hero-search-wrap" onSubmit={handleHeroSearch}>
               <Search size={16} color="#8B9E94" />
               <input
                 type="text"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
                 placeholder="Tìm kiếm đồ thất lạc (ví dụ: ví, laptop, thẻ sinh viên...)"
               />
-              <a href="/search" className="p01-btn-hero-search" style={{ textDecoration: 'none' }}>
+              <button type="submit" className="p01-btn-hero-search" style={{ border: 'none', cursor: 'pointer' }}>
                 Tìm kiếm
-              </a>
-            </div>
+              </button>
+            </form>
 
             {/* Popular tags */}
             <div className="p01-popular-tags">
@@ -131,11 +89,15 @@ export default function HomePage() {
                 <Flame size={13} />
                 <span>Phổ biến:</span>
               </span>
-              <a href="/search" className="p01-tag-pill">Ví tiền</a>
-              <a href="/search" className="p01-tag-pill">Laptop</a>
-              <a href="/search" className="p01-tag-pill">Thẻ sinh viên</a>
-              <a href="/search" className="p01-tag-pill">Tai nghe</a>
-              <a href="/search" className="p01-tag-pill">Balo</a>
+              {['Ví', 'Laptop', 'Thẻ sinh viên', 'Tai nghe', 'Balo'].map((tag) => (
+                <Link
+                  key={tag}
+                  to={`/search?keyword=${encodeURIComponent(tag)}`}
+                  className="p01-tag-pill"
+                >
+                  {tag}
+                </Link>
+              ))}
             </div>
           </div>
 
@@ -147,8 +109,7 @@ export default function HomePage() {
 
         {/* 2 Quick Action Cards */}
         <section className="p01-quick-actions-grid">
-          {/* Card 1: Tôi mất đồ */}
-          <a href="/report-lost" className="p01-action-card-lost" onClick={(e) => e.preventDefault()}>
+          <Link to="/items/new?type=LOST" className="p01-action-card-lost">
             <div className="p01-action-left">
               <img src={iconLostBackpack} alt="" className="p01-action-icon-img" />
               <div className="p01-action-text">
@@ -159,10 +120,9 @@ export default function HomePage() {
             <div className="p01-action-circle-btn">
               <ArrowRight size={16} />
             </div>
-          </a>
+          </Link>
 
-          {/* Card 2: Tôi nhặt được đồ */}
-          <a href="/report-found" className="p01-action-card-found" onClick={(e) => e.preventDefault()}>
+          <Link to="/items/new?type=FOUND" className="p01-action-card-found">
             <div className="p01-action-left">
               <img src={iconFoundBox} alt="" className="p01-action-icon-img" />
               <div className="p01-action-text">
@@ -173,7 +133,7 @@ export default function HomePage() {
             <div className="p01-action-circle-btn">
               <ArrowRight size={16} />
             </div>
-          </a>
+          </Link>
         </section>
 
         {/* 3 Bước sử dụng đơn giản */}
@@ -184,7 +144,6 @@ export default function HomePage() {
           </div>
 
           <div className="p01-steps-card">
-            {/* Step 1 */}
             <div className="p01-step-block">
               <div className="p01-step-num-circle">1</div>
               <div className="p01-step-icon-wrap">
@@ -198,7 +157,6 @@ export default function HomePage() {
 
             <ArrowRight size={18} className="p01-step-divider-arrow" />
 
-            {/* Step 2 */}
             <div className="p01-step-block">
               <div className="p01-step-num-circle-outline">2</div>
               <div className="p01-step-icon-wrap">
@@ -212,7 +170,6 @@ export default function HomePage() {
 
             <ArrowRight size={18} className="p01-step-divider-arrow" />
 
-            {/* Step 3 */}
             <div className="p01-step-block">
               <div className="p01-step-num-circle-outline">3</div>
               <div className="p01-step-icon-wrap">
@@ -233,22 +190,21 @@ export default function HomePage() {
           <div className="p01-latest-header">
             <div className="p01-latest-title">
               <Sparkles size={18} />
-              <span>Tin mới nhất</span>
+              <span>Tin mới nhất (Dữ liệu thật từ Supabase)</span>
             </div>
 
-            {/* Filter Tabs */}
             <div className="p01-latest-filter-tabs">
               <button
                 type="button"
                 className={`p01-filter-tab-pill ${activeFilter === 'all' ? 'active' : ''}`}
-                onClick={() => setActiveFilter('all')}
+                onClick={() => handleSelectFilter('all')}
               >
                 <span>Tất cả</span>
               </button>
               <button
                 type="button"
                 className={`p01-filter-tab-pill ${activeFilter === 'lost' ? 'active' : ''}`}
-                onClick={() => setActiveFilter('lost')}
+                onClick={() => handleSelectFilter('lost')}
               >
                 <Flame size={12} color={activeFilter === 'lost' ? '#FFFFFF' : '#E65100'} />
                 <span>Báo mất (LOST)</span>
@@ -256,71 +212,78 @@ export default function HomePage() {
               <button
                 type="button"
                 className={`p01-filter-tab-pill ${activeFilter === 'found' ? 'active' : ''}`}
-                onClick={() => setActiveFilter('found')}
+                onClick={() => handleSelectFilter('found')}
               >
                 <Check size={12} color={activeFilter === 'found' ? '#FFFFFF' : '#2E7D32'} />
-                <span>Nhật được (FOUND)</span>
+                <span>Nhặt được (FOUND)</span>
               </button>
             </div>
 
-            {/* View all link */}
-            <a href="/search" className="p01-latest-view-all">
+            <Link to="/search" className="p01-latest-view-all">
               <span>Xem tất cả</span>
               <ArrowRight size={14} />
-            </a>
+            </Link>
           </div>
 
-          {/* 4 Items Grid */}
-          <div className="p01-items-grid">
-            {filteredItems.map((item) => (
-              <a
-                key={item.id}
-                href="/items/detail"
-                className="p01-item-card"
-                style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
-              >
-                <div className="p01-card-top-row">
-                  <div className="p01-card-badge-row">
-                    <span className={`m01-type-badge ${item.type === 'FOUND' ? 'm01-type-found' : 'm01-type-lost'}`}>
-                      {item.type}
-                    </span>
-                    <span className="p01-card-time">{item.timeAgo}</span>
+          {loading ? (
+            <div style={{ padding: 32, textAlign: 'center', color: '#64748B' }}>
+              Đang tải dữ liệu từ Backend & Supabase...
+            </div>
+          ) : items.length === 0 ? (
+            <div style={{ padding: 32, textAlign: 'center', color: '#64748B' }}>
+              Chưa có tin đăng nào phù hợp.
+            </div>
+          ) : (
+            <div className="p01-items-grid">
+              {items.map((item) => (
+                <Link
+                  key={item.id}
+                  to={`/items/${item.id}`}
+                  className="p01-item-card"
+                  style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+                >
+                  <div className="p01-card-top-row">
+                    <div className="p01-card-badge-row">
+                      <span className={`m01-type-badge ${item.itemType === 'FOUND' ? 'm01-type-found' : 'm01-type-lost'}`}>
+                        {item.itemType}
+                      </span>
+                      <span className="p01-card-time">{item.businessStatus}</span>
+                    </div>
+                    <button
+                      type="button"
+                      className="p01-card-bookmark-btn"
+                      aria-label="Lưu tin"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                      }}
+                    >
+                      <Bookmark size={15} />
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    className="p01-card-bookmark-btn"
-                    aria-label="Lưu tin"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                    }}
-                  >
-                    <Bookmark size={15} />
-                  </button>
-                </div>
 
-                <div className="p01-card-image-box">
-                  <img src={item.img} alt="" />
-                </div>
-
-                <h3 className="p01-card-title">{item.title}</h3>
-
-                <div className="p01-card-meta">
-                  <div className="p01-card-meta-line">
-                    <MapPin size={12} />
-                    <span>{item.location}</span>
+                  <div className="p01-card-image-box">
+                    <img src={getItemThumbnail(item)} alt={item.title} />
                   </div>
-                  <div className="p01-card-meta-line">
-                    <Calendar size={12} />
-                    <span>{item.date}</span>
+
+                  <h3 className="p01-card-title">{item.title}</h3>
+
+                  <div className="p01-card-meta">
+                    <div className="p01-card-meta-line">
+                      <MapPin size={12} />
+                      <span>{item.approximateLocation}</span>
+                    </div>
+                    <div className="p01-card-meta-line">
+                      <Calendar size={12} />
+                      <span>{formatShortDate(item.occurredAt)}</span>
+                    </div>
                   </div>
-                </div>
-              </a>
-            ))}
-          </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </section>
       </main>
     </div>
   )
 }
-
