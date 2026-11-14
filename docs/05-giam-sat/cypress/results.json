@@ -1,0 +1,1404 @@
+{
+  "summary": {
+    "startedAt": "2026-11-14T02:58:08.511Z",
+    "endedAt": "2026-11-14T03:01:03.096Z",
+    "timezone": "Asia/Bangkok",
+    "commit": "0befeb43d2b8de151672d426b322259460ffa139",
+    "browser": "chrome 155.0.8059.39",
+    "cypress": "15.21.2",
+    "node": "v20.20.2",
+    "total": 106,
+    "passed": 99,
+    "failed": 7,
+    "skipped": 0,
+    "screenshotCount": 114
+  },
+  "tests": [
+    {
+      "id": "ADMIN-01",
+      "title": "Dashboard theo vai trò",
+      "steps": "ADMIN/MOD/USER gọi stats",
+      "expected": "ADMIN/MOD có thống kê; USER 403",
+      "spec": "cypress/e2e/api-admin.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-admin.cy.js/ADMIN-01.png"
+      ]
+    },
+    {
+      "id": "ADMIN-02",
+      "title": "Danh sách và tìm kiếm người dùng",
+      "steps": "ADMIN tìm keyword + role + status",
+      "expected": "Chỉ tài khoản phù hợp, không có password_hash",
+      "spec": "cypress/e2e/api-admin.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-admin.cy.js/ADMIN-02.png"
+      ]
+    },
+    {
+      "id": "ADMIN-03",
+      "title": "Chặn MOD và USER quản lý tài khoản",
+      "steps": "MOD/USER gọi danh sách, đổi role và khóa user",
+      "expected": "Tất cả trả 403",
+      "spec": "cypress/e2e/api-admin.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-admin.cy.js/ADMIN-03.png"
+      ]
+    },
+    {
+      "id": "ADMIN-04",
+      "title": "Đổi vai trò và đọc lại",
+      "steps": "ADMIN nâng USER lên MODERATOR; đăng nhập lại user",
+      "expected": "Role MODERATOR được lưu và JWT mới có quyền staff",
+      "spec": "cypress/e2e/api-admin.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-admin.cy.js/ADMIN-04.png"
+      ]
+    },
+    {
+      "id": "ADMIN-05",
+      "title": "Khóa và mở khóa tài khoản",
+      "steps": "ADMIN khóa USER, thử login; mở khóa, login lại",
+      "expected": "Khóa chặn login 403; mở khóa login 200",
+      "spec": "cypress/e2e/api-admin.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-admin.cy.js/ADMIN-05.png"
+      ]
+    },
+    {
+      "id": "ADMIN-06",
+      "title": "Cấm tự hạ quyền hoặc tự khóa ADMIN",
+      "steps": "ADMIN đổi role bản thân sang USER và khóa chính mình",
+      "expected": "400 cho cả hai",
+      "spec": "cypress/e2e/api-admin.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-admin.cy.js/ADMIN-06.png"
+      ]
+    },
+    {
+      "id": "ADMIN-07",
+      "title": "Validation quản lý người dùng",
+      "steps": "ID sai/không tồn tại, role sai, status sai",
+      "expected": "400/404; không cập nhật user",
+      "spec": "cypress/e2e/api-admin.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-admin.cy.js/ADMIN-07.png"
+      ]
+    },
+    {
+      "id": "ADMIN-08",
+      "title": "Tạo và cập nhật danh mục",
+      "steps": "ADMIN tạo danh mục tiếng Việt rồi đổi tên/mô tả",
+      "expected": "201 có slug; cập nhật lưu đúng",
+      "spec": "cypress/e2e/api-admin.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-admin.cy.js/ADMIN-08.png"
+      ]
+    },
+    {
+      "id": "ADMIN-09",
+      "title": "Ẩn danh mục khỏi form tạo tin",
+      "steps": "ADMIN ẩn category 1; public categories và tạo tin dùng category ẩn",
+      "expected": "Danh mục ẩn không ở public list; tạo tin bị 400; tin cũ còn xem được",
+      "spec": "cypress/e2e/api-admin.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-admin.cy.js/ADMIN-09.png"
+      ]
+    },
+    {
+      "id": "ADMIN-10",
+      "title": "Danh mục trùng và thiếu tên",
+      "steps": "Tạo tên/slug trùng, tên trống; sửa ID không tồn tại",
+      "expected": "409; 400; 404",
+      "spec": "cypress/e2e/api-admin.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-admin.cy.js/ADMIN-10.png"
+      ]
+    },
+    {
+      "id": "ADMIN-11",
+      "title": "MOD chỉ được đọc danh mục quản trị",
+      "steps": "MOD GET/POST/PUT danh mục",
+      "expected": "GET 200; POST và PUT 403",
+      "spec": "cypress/e2e/api-admin.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-admin.cy.js/ADMIN-11.png"
+      ]
+    },
+    {
+      "id": "ADMIN-12",
+      "title": "Audit tìm kiếm, lọc và quyền",
+      "steps": "ADMIN/MOD đọc audit lọc HIDE_ITEM; USER đọc audit",
+      "expected": "Đúng action và keyword; USER bị 403",
+      "spec": "cypress/e2e/api-admin.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-admin.cy.js/ADMIN-12.png"
+      ]
+    },
+    {
+      "id": "AUTH-01",
+      "title": "Health và envelope 404",
+      "steps": "GET health và route không tồn tại",
+      "expected": "Database CONNECTED; route lạ trả 404 ROUTE_NOT_FOUND",
+      "spec": "cypress/e2e/api-auth.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-auth.cy.js/AUTH-01.png"
+      ]
+    },
+    {
+      "id": "AUTH-02",
+      "title": "Đăng nhập vai trò ADMIN",
+      "steps": "POST login rồi GET me và admin-check bằng JWT",
+      "expected": "Thông tin tài khoản đúng, không trả password; USER bị chặn admin-check",
+      "spec": "cypress/e2e/api-auth.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-auth.cy.js/AUTH-02.png"
+      ]
+    },
+    {
+      "id": "AUTH-03",
+      "title": "Đăng nhập vai trò MODERATOR",
+      "steps": "POST login rồi GET me và admin-check bằng JWT",
+      "expected": "Thông tin tài khoản đúng, không trả password; USER bị chặn admin-check",
+      "spec": "cypress/e2e/api-auth.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-auth.cy.js/AUTH-03.png"
+      ]
+    },
+    {
+      "id": "AUTH-04",
+      "title": "Đăng nhập vai trò USER",
+      "steps": "POST login rồi GET me và admin-check bằng JWT",
+      "expected": "Thông tin tài khoản đúng, không trả password; USER bị chặn admin-check",
+      "spec": "cypress/e2e/api-auth.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-auth.cy.js/AUTH-04.png"
+      ]
+    },
+    {
+      "id": "AUTH-05",
+      "title": "Thiếu thông tin đăng nhập",
+      "steps": "POST /auth/login với dữ liệu không hợp lệ",
+      "expected": "HTTP 400, envelope lỗi",
+      "spec": "cypress/e2e/api-auth.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-auth.cy.js/AUTH-05.png"
+      ]
+    },
+    {
+      "id": "AUTH-06",
+      "title": "Sai mật khẩu",
+      "steps": "POST /auth/login với dữ liệu không hợp lệ",
+      "expected": "HTTP 401, envelope lỗi",
+      "spec": "cypress/e2e/api-auth.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-auth.cy.js/AUTH-06.png"
+      ]
+    },
+    {
+      "id": "AUTH-07",
+      "title": "Tài khoản không tồn tại",
+      "steps": "POST /auth/login với dữ liệu không hợp lệ",
+      "expected": "HTTP 401, envelope lỗi",
+      "spec": "cypress/e2e/api-auth.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-auth.cy.js/AUTH-07.png"
+      ]
+    },
+    {
+      "id": "AUTH-08",
+      "title": "Tài khoản bị khóa",
+      "steps": "POST /auth/login với dữ liệu không hợp lệ",
+      "expected": "HTTP 403, envelope lỗi",
+      "spec": "cypress/e2e/api-auth.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-auth.cy.js/AUTH-08.png"
+      ]
+    },
+    {
+      "id": "AUTH-09",
+      "title": "Đăng ký và chống tự cấp quyền ADMIN",
+      "steps": "Đăng ký role ADMIN, đọc me và thử đăng ký email trùng",
+      "expected": "201 với role USER; email trùng 409",
+      "spec": "cypress/e2e/api-auth.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-auth.cy.js/AUTH-09.png"
+      ]
+    },
+    {
+      "id": "AUTH-10",
+      "title": "Validation đăng ký",
+      "steps": "Gửi thiếu họ tên, mật khẩu ngắn và email rỗng",
+      "expected": "Các request đều 400, không tạo user",
+      "spec": "cypress/e2e/api-auth.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-auth.cy.js/AUTH-10.png"
+      ]
+    },
+    {
+      "id": "AUTH-11",
+      "title": "Email sai định dạng",
+      "steps": "Đăng ký email không có @ qua API",
+      "expected": "400 VALIDATION_ERROR; không tạo tài khoản",
+      "spec": "cypress/e2e/api-auth.cy.js",
+      "state": "failed",
+      "duration": 0,
+      "error": "AssertionError: expected 201 to equal 400\n    at failure (webpack://web/./cypress/support/cases.js:14:29)\n    at Context.eval (webpack://web/./cypress/e2e/api-auth.cy.js:33:120)\n    at getRet (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:121395:20)\n    at tryCatcher (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:1780:23)\n    at Promise.attempt.Promise.try (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:4288:29)\n    at Context.thenFn (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:121406:66)",
+      "screenshots": [
+        "screenshots/api-auth.cy.js/API — xác thực và phân quyền -- AUTH-11 — Email sai định dạng (failed).png",
+        "screenshots/api-auth.cy.js/AUTH-11.png"
+      ]
+    },
+    {
+      "id": "AUTH-12",
+      "title": "Thiếu JWT và JWT giả",
+      "steps": "GET me không token và gửi Bearer không hợp lệ",
+      "expected": "Cả hai request trả 401",
+      "spec": "cypress/e2e/api-auth.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-auth.cy.js/AUTH-12.png"
+      ]
+    },
+    {
+      "id": "AUTH-13",
+      "title": "Đăng xuất thu hồi phiên",
+      "steps": "Đăng nhập, logout rồi dùng lại JWT gọi me",
+      "expected": "Logout 200; JWT cũ nhận 401",
+      "spec": "cypress/e2e/api-auth.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-auth.cy.js/AUTH-13.png"
+      ]
+    },
+    {
+      "id": "AUTH-14",
+      "title": "Khóa tài khoản vô hiệu hóa phiên đang dùng",
+      "steps": "Đăng nhập USER, ADMIN khóa tài khoản, USER dùng JWT cũ đọc claims/my",
+      "expected": "API từ chối 401 hoặc 403",
+      "spec": "cypress/e2e/api-auth.cy.js",
+      "state": "failed",
+      "duration": 0,
+      "error": "AssertionError: expected 200 to be one of [ 401, 403 ]\n    at Context.eval (webpack://web/./cypress/e2e/api-auth.cy.js:47:90)\n    at getRet (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:121395:20)\n    at tryCatcher (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:1780:23)\n    at Promise.attempt.Promise.try (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:4288:29)\n    at Context.thenFn (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:121406:66)\n    at Context.then (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:121657:21)",
+      "screenshots": [
+        "screenshots/api-auth.cy.js/API — xác thực và phân quyền -- AUTH-14 — Khóa tài khoản vô hiệu hóa phiên đang dùng (failed).png",
+        "screenshots/api-auth.cy.js/AUTH-14.png"
+      ]
+    },
+    {
+      "id": "AUTH-15",
+      "title": "Hạ quyền có hiệu lực với JWT cũ",
+      "steps": "ADMIN hạ MODERATOR về USER; JWT MOD cũ đọc endpoint quản trị",
+      "expected": "403 sau khi thay đổi quyền",
+      "spec": "cypress/e2e/api-auth.cy.js",
+      "state": "failed",
+      "duration": 0,
+      "error": "AssertionError: expected 200 to equal 403\n    at failure (webpack://web/./cypress/support/cases.js:14:29)\n    at Context.eval (webpack://web/./cypress/e2e/api-auth.cy.js:52:81)\n    at getRet (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:121395:20)\n    at tryCatcher (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:1780:23)\n    at Promise.attempt.Promise.try (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:4288:29)\n    at Context.thenFn (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:121406:66)",
+      "screenshots": [
+        "screenshots/api-auth.cy.js/API — xác thực và phân quyền -- AUTH-15 — Hạ quyền có hiệu lực với JWT cũ (failed).png",
+        "screenshots/api-auth.cy.js/AUTH-15.png"
+      ]
+    },
+    {
+      "id": "CLAIM-01",
+      "title": "Tạo yêu cầu và đọc lại bằng chứng",
+      "steps": "ADMIN tạo claim trên tin 1; đọc detail/proofs",
+      "expected": "201 PENDING, đúng claimant, bằng chứng được lưu",
+      "spec": "cypress/e2e/api-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-claims.cy.js/CLAIM-01.png"
+      ]
+    },
+    {
+      "id": "CLAIM-02",
+      "title": "Khách gửi claim",
+      "steps": "POST /items/1/claims với tài khoản guest",
+      "expected": "HTTP 401; không thêm claim",
+      "spec": "cypress/e2e/api-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-claims.cy.js/CLAIM-02.png"
+      ]
+    },
+    {
+      "id": "CLAIM-03",
+      "title": "Tự claim tin của mình",
+      "steps": "POST /items/1/claims với tài khoản owner",
+      "expected": "HTTP 400; không thêm claim",
+      "spec": "cypress/e2e/api-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-claims.cy.js/CLAIM-03.png"
+      ]
+    },
+    {
+      "id": "CLAIM-04",
+      "title": "Gửi trùng claim PENDING",
+      "steps": "POST /items/1/claims với tài khoản claimant",
+      "expected": "HTTP 409; không thêm claim",
+      "spec": "cypress/e2e/api-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-claims.cy.js/CLAIM-04.png"
+      ]
+    },
+    {
+      "id": "CLAIM-05",
+      "title": "Claim tin LOST",
+      "steps": "POST /items/2/claims với tài khoản other",
+      "expected": "HTTP 400; không thêm claim",
+      "spec": "cypress/e2e/api-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-claims.cy.js/CLAIM-05.png"
+      ]
+    },
+    {
+      "id": "CLAIM-06",
+      "title": "Claim tin đã đóng",
+      "steps": "POST /items/3/claims với tài khoản other",
+      "expected": "HTTP 409; không thêm claim",
+      "spec": "cypress/e2e/api-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-claims.cy.js/CLAIM-06.png"
+      ]
+    },
+    {
+      "id": "CLAIM-07",
+      "title": "Claim tin ẩn",
+      "steps": "POST /items/4/claims với tài khoản other",
+      "expected": "HTTP 403; không thêm claim",
+      "spec": "cypress/e2e/api-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-claims.cy.js/CLAIM-07.png"
+      ]
+    },
+    {
+      "id": "CLAIM-08",
+      "title": "Claim tin chưa duyệt",
+      "steps": "POST /items/5/claims với tài khoản other",
+      "expected": "HTTP 403; không thêm claim",
+      "spec": "cypress/e2e/api-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-claims.cy.js/CLAIM-08.png"
+      ]
+    },
+    {
+      "id": "CLAIM-09",
+      "title": "Claim tin không tồn tại",
+      "steps": "POST /items/99999/claims với tài khoản other",
+      "expected": "HTTP 404; không thêm claim",
+      "spec": "cypress/e2e/api-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-claims.cy.js/CLAIM-09.png"
+      ]
+    },
+    {
+      "id": "CLAIM-10",
+      "title": "Thiếu bằng chứng",
+      "steps": "Gửi claim không có mô tả hoặc ảnh",
+      "expected": "400 VALIDATION_ERROR",
+      "spec": "cypress/e2e/api-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-claims.cy.js/CLAIM-10.png"
+      ]
+    },
+    {
+      "id": "CLAIM-11",
+      "title": "Quyền riêng tư detail và proof",
+      "steps": "Chủ claim/MOD xem; chủ tin/người khác/khách đọc claim 1",
+      "expected": "Chủ claim/MOD 200; người ngoài 403 hoặc 401; không lộ proof",
+      "spec": "cypress/e2e/api-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-claims.cy.js/CLAIM-11.png"
+      ]
+    },
+    {
+      "id": "CLAIM-12",
+      "title": "Danh sách của tôi và lọc staff",
+      "steps": "USER lấy my; MOD lọc PENDING, itemId, keyword",
+      "expected": "USER chỉ có claim 1,3; MOD nhận claim phù hợp",
+      "spec": "cypress/e2e/api-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-claims.cy.js/CLAIM-12.png"
+      ]
+    },
+    {
+      "id": "CLAIM-13",
+      "title": "Rút yêu cầu và cấm rút hộ/lặp",
+      "steps": "Người khác rút claim 1; chủ claim rút 2 lần",
+      "expected": "403; WITHDRAWN; lặp 409",
+      "spec": "cypress/e2e/api-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-claims.cy.js/CLAIM-13.png"
+      ]
+    },
+    {
+      "id": "CLAIM-14",
+      "title": "Từ chối yêu cầu và cấm thao tác lặp",
+      "steps": "MOD từ chối claim 1 rồi thử lại",
+      "expected": "REJECTED, audit REJECT_CLAIM; lặp 409",
+      "spec": "cypress/e2e/api-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-claims.cy.js/CLAIM-14.png"
+      ]
+    },
+    {
+      "id": "CLAIM-15",
+      "title": "Bàn giao thành công và từ chối claim còn lại",
+      "steps": "MOD bàn giao claim 1; kiểm tra DB; gọi lại",
+      "expected": "ACCEPTED/CLOSED, claim 2 REJECTED, 1 handover cho item 1; lặp 409",
+      "spec": "cypress/e2e/api-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-claims.cy.js/CLAIM-15.png"
+      ]
+    },
+    {
+      "id": "CLAIM-16",
+      "title": "Chống hai bàn giao đồng thời",
+      "steps": "Gửi đồng thời 2 request bàn giao claim 1 và 2 qua Promise.all; kiểm tra DB",
+      "expected": "Đúng một 200, một 409; một handover; một ACCEPTED và một REJECTED",
+      "spec": "cypress/e2e/api-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-claims.cy.js/CLAIM-16.png"
+      ]
+    },
+    {
+      "id": "CLAIM-17",
+      "title": "USER không được bàn giao hoặc từ chối",
+      "steps": "USER gọi handover và reject; MOD bàn giao ngày sai",
+      "expected": "403 cho USER; 400 ngày sai; chưa có handover mới",
+      "spec": "cypress/e2e/api-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-claims.cy.js/CLAIM-17.png"
+      ]
+    },
+    {
+      "id": "CLAIM-18",
+      "title": "ID claim và bộ lọc không hợp lệ",
+      "steps": "Gửi ID âm, ID không tồn tại, status/itemId sai",
+      "expected": "400 hoặc 404 đúng trường hợp",
+      "spec": "cypress/e2e/api-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-claims.cy.js/CLAIM-18.png"
+      ]
+    },
+    {
+      "id": "ITEM-01",
+      "title": "Danh mục và danh sách công khai",
+      "steps": "GET categories và items bằng khách",
+      "expected": "5 danh mục; chỉ tin 1,2,3 công khai; không có bằng chứng",
+      "spec": "cypress/e2e/api-items.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-items.cy.js/ITEM-01.png"
+      ]
+    },
+    {
+      "id": "ITEM-02",
+      "title": "Lọc kết hợp và kết quả rỗng",
+      "steps": "Tìm từ khóa + loại + danh mục + khu vực; tìm từ khóa không tồn tại",
+      "expected": "Chỉ tin 1 khớp; từ khóa khác trả []",
+      "spec": "cypress/e2e/api-items.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-items.cy.js/ITEM-02.png"
+      ]
+    },
+    {
+      "id": "ITEM-03",
+      "title": "Tin của tôi và tin ẩn",
+      "steps": "Khách gọi mine; chủ tin và staff đọc tin ẩn; khách đọc tin ẩn",
+      "expected": "Khách bị chặn; chủ tin/staff xem được",
+      "spec": "cypress/e2e/api-items.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-items.cy.js/ITEM-03.png"
+      ]
+    },
+    {
+      "id": "ITEM-04",
+      "title": "Chi tiết tin và ID lỗi",
+      "steps": "Đọc tin 1, ID âm, ID không tồn tại",
+      "expected": "200 đúng nội dung; 400 và 404 tương ứng",
+      "spec": "cypress/e2e/api-items.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-items.cy.js/ITEM-04.png"
+      ]
+    },
+    {
+      "id": "ITEM-05",
+      "title": "Tạo tin LOST và đọc lại",
+      "steps": "USER tạo tin hợp lệ rồi GET theo ID",
+      "expected": "201, chủ tin đúng, dữ liệu bền vững khi đọc lại",
+      "spec": "cypress/e2e/api-items.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-items.cy.js/ITEM-05.png"
+      ]
+    },
+    {
+      "id": "ITEM-06",
+      "title": "Tạo tin FOUND và đọc lại",
+      "steps": "USER tạo tin hợp lệ rồi GET theo ID",
+      "expected": "201, chủ tin đúng, dữ liệu bền vững khi đọc lại",
+      "spec": "cypress/e2e/api-items.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-items.cy.js/ITEM-06.png"
+      ]
+    },
+    {
+      "id": "ITEM-07",
+      "title": "Khách không được đăng tin",
+      "steps": "POST items không JWT",
+      "expected": "401 UNAUTHENTICATED",
+      "spec": "cypress/e2e/api-items.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-items.cy.js/ITEM-07.png"
+      ]
+    },
+    {
+      "id": "ITEM-08",
+      "title": "Thiếu trường bắt buộc itemType",
+      "steps": "Tạo tin thiếu itemType",
+      "expected": "400; số tin trong database giữ nguyên",
+      "spec": "cypress/e2e/api-items.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-items.cy.js/ITEM-08.png"
+      ]
+    },
+    {
+      "id": "ITEM-09",
+      "title": "Thiếu trường bắt buộc categoryId",
+      "steps": "Tạo tin thiếu categoryId",
+      "expected": "400; số tin trong database giữ nguyên",
+      "spec": "cypress/e2e/api-items.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-items.cy.js/ITEM-09.png"
+      ]
+    },
+    {
+      "id": "ITEM-10",
+      "title": "Thiếu trường bắt buộc title",
+      "steps": "Tạo tin thiếu title",
+      "expected": "400; số tin trong database giữ nguyên",
+      "spec": "cypress/e2e/api-items.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-items.cy.js/ITEM-10.png"
+      ]
+    },
+    {
+      "id": "ITEM-11",
+      "title": "Thiếu trường bắt buộc description",
+      "steps": "Tạo tin thiếu description",
+      "expected": "400; số tin trong database giữ nguyên",
+      "spec": "cypress/e2e/api-items.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-items.cy.js/ITEM-11.png"
+      ]
+    },
+    {
+      "id": "ITEM-12",
+      "title": "Thiếu trường bắt buộc approximateLocation",
+      "steps": "Tạo tin thiếu approximateLocation",
+      "expected": "400; số tin trong database giữ nguyên",
+      "spec": "cypress/e2e/api-items.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-items.cy.js/ITEM-12.png"
+      ]
+    },
+    {
+      "id": "ITEM-13",
+      "title": "Thiếu trường bắt buộc occurredAt",
+      "steps": "Tạo tin thiếu occurredAt",
+      "expected": "400; số tin trong database giữ nguyên",
+      "spec": "cypress/e2e/api-items.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-items.cy.js/ITEM-13.png"
+      ]
+    },
+    {
+      "id": "ITEM-14",
+      "title": "Loại tin, danh mục và ngày sai",
+      "steps": "Tạo tin với itemType lạ, categoryId không tồn tại, ngày sai",
+      "expected": "400 cho từng request",
+      "spec": "cypress/e2e/api-items.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-items.cy.js/ITEM-14.png"
+      ]
+    },
+    {
+      "id": "ITEM-15",
+      "title": "Chủ tin sửa tin mở",
+      "steps": "Chủ tin PUT title và đọc lại",
+      "expected": "Title mới được lưu",
+      "spec": "cypress/e2e/api-items.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-items.cy.js/ITEM-15.png"
+      ]
+    },
+    {
+      "id": "ITEM-16",
+      "title": "Cấm sửa tin người khác và tin đóng",
+      "steps": "USER sửa tin người khác; chủ tin sửa tin CLOSED",
+      "expected": "403 và 409; dữ liệu giữ nguyên",
+      "spec": "cypress/e2e/api-items.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-items.cy.js/ITEM-16.png"
+      ]
+    },
+    {
+      "id": "ITEM-17",
+      "title": "Đánh dấu tìm thấy và cấm thao tác lặp",
+      "steps": "Chủ tin LOST resolve 2 lần; người khác resolve",
+      "expected": "RESOLVED; lặp 409, người khác 403",
+      "spec": "cypress/e2e/api-items.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-items.cy.js/ITEM-17.png"
+      ]
+    },
+    {
+      "id": "ITEM-18",
+      "title": "Ẩn và khôi phục tin đã bàn giao",
+      "steps": "MOD ẩn tin CLOSED với lý do; khách không xem được; MOD khôi phục",
+      "expected": "CLOSED được giữ; có audit HIDE_ITEM và RESTORE_ITEM",
+      "spec": "cypress/e2e/api-items.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-items.cy.js/ITEM-18.png"
+      ]
+    },
+    {
+      "id": "ITEM-19",
+      "title": "Kiểm duyệt: quyền, lý do và trạng thái",
+      "steps": "USER ẩn tin; MOD ẩn thiếu lý do; MOD gửi trạng thái sai",
+      "expected": "403; 400; 400",
+      "spec": "cypress/e2e/api-items.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-items.cy.js/ITEM-19.png"
+      ]
+    },
+    {
+      "id": "ITEM-20",
+      "title": "Duyệt và từ chối tin chờ",
+      "steps": "MOD duyệt tin 5 và từ chối tin 1 có lý do",
+      "expected": "APPROVED và REJECTED; tin từ chối không xuất hiện công khai",
+      "spec": "cypress/e2e/api-items.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-items.cy.js/ITEM-20.png"
+      ]
+    },
+    {
+      "id": "FILE-01",
+      "title": "Tạo tin multipart có ảnh",
+      "steps": "POST items multipart với ảnh PNG",
+      "expected": "201, có ảnh PUBLIC và URL tải được",
+      "spec": "cypress/e2e/api-uploads.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-uploads.cy.js/FILE-01.png"
+      ]
+    },
+    {
+      "id": "FILE-02",
+      "title": "Upload thêm và xóa ảnh",
+      "steps": "Chủ tin thêm PNG, xóa ảnh, GET lại URL và metadata",
+      "expected": "Upload 201; xóa 200; metadata rỗng; file 404",
+      "spec": "cypress/e2e/api-uploads.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-uploads.cy.js/FILE-02.png"
+      ]
+    },
+    {
+      "id": "FILE-03",
+      "title": "Cấm upload/xóa ảnh tin của người khác",
+      "steps": "USER upload vào tin 1; chủ tin upload rồi USER khác xóa",
+      "expected": "403 cho thao tác không có quyền",
+      "spec": "cypress/e2e/api-uploads.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-uploads.cy.js/FILE-03.png"
+      ]
+    },
+    {
+      "id": "FILE-04",
+      "title": "Ảnh PRIVATE không lộ trong JSON công khai",
+      "steps": "Upload PRIVATE, khách và chủ tin đọc detail",
+      "expected": "Khách images=[]; chủ tin thấy ảnh PRIVATE",
+      "spec": "cypress/e2e/api-uploads.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-uploads.cy.js/FILE-04.png"
+      ]
+    },
+    {
+      "id": "FILE-05",
+      "title": "Ảnh PRIVATE bị chặn khi truy cập URL trực tiếp",
+      "steps": "Lấy URL PRIVATE bằng chủ tin; khách tải trực tiếp URL không JWT",
+      "expected": "401/403/404; nội dung ảnh riêng không được phục vụ công khai",
+      "spec": "cypress/e2e/api-uploads.cy.js",
+      "state": "failed",
+      "duration": 0,
+      "error": "AssertionError: expected 200 to be one of [ 401, 403, 404 ]\n    at Context.eval (webpack://web/./cypress/e2e/api-uploads.cy.js:54:52)\n    at getRet (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:121395:20)\n    at tryCatcher (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:1780:23)\n    at Promise.attempt.Promise.try (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:4288:29)\n    at Context.thenFn (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:121406:66)\n    at Context.then (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:121657:21)",
+      "screenshots": [
+        "screenshots/api-uploads.cy.js/API — upload và quyền truy cập ảnh -- FILE-05 — Ảnh PRIVATE bị chặn khi truy cập URL trực tiếp (failed).png",
+        "screenshots/api-uploads.cy.js/FILE-05.png"
+      ]
+    },
+    {
+      "id": "FILE-06",
+      "title": "Ảnh bằng chứng bị chặn khi truy cập URL trực tiếp",
+      "steps": "Tạo claim ảnh; khách tải URL proof không JWT",
+      "expected": "401/403/404; ảnh bằng chứng được bảo mật như API proofs",
+      "spec": "cypress/e2e/api-uploads.cy.js",
+      "state": "failed",
+      "duration": 0,
+      "error": "AssertionError: expected 200 to be one of [ 401, 403, 404 ]\n    at Context.eval (webpack://web/./cypress/e2e/api-uploads.cy.js:65:52)\n    at getRet (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:121395:20)\n    at tryCatcher (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:1780:23)\n    at Promise.attempt.Promise.try (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:4288:29)\n    at Context.thenFn (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:121406:66)\n    at Context.then (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:121657:21)",
+      "screenshots": [
+        "screenshots/api-uploads.cy.js/API — upload và quyền truy cập ảnh -- FILE-06 — Ảnh bằng chứng bị chặn khi truy cập URL trực tiếp (failed).png",
+        "screenshots/api-uploads.cy.js/FILE-06.png"
+      ]
+    },
+    {
+      "id": "FILE-07",
+      "title": "Từ chối file không phải ảnh",
+      "steps": "Upload dữ liệu vượt quy tắc qua multipart thật",
+      "expected": "400 VALIDATION_ERROR",
+      "spec": "cypress/e2e/api-uploads.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-uploads.cy.js/FILE-07.png"
+      ]
+    },
+    {
+      "id": "FILE-08",
+      "title": "Từ chối ảnh vượt 5MB",
+      "steps": "Upload dữ liệu vượt quy tắc qua multipart thật",
+      "expected": "400 VALIDATION_ERROR",
+      "spec": "cypress/e2e/api-uploads.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-uploads.cy.js/FILE-08.png"
+      ]
+    },
+    {
+      "id": "FILE-09",
+      "title": "Từ chối hơn 5 ảnh mỗi request",
+      "steps": "Upload dữ liệu vượt quy tắc qua multipart thật",
+      "expected": "400 VALIDATION_ERROR",
+      "spec": "cypress/e2e/api-uploads.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-uploads.cy.js/FILE-09.png"
+      ]
+    },
+    {
+      "id": "FILE-10",
+      "title": "Chủ tin không thêm ảnh vào tin CLOSED",
+      "steps": "Upload ảnh vào tin 3 đã bàn giao",
+      "expected": "409 STATE_CONFLICT",
+      "spec": "cypress/e2e/api-uploads.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/api-uploads.cy.js/FILE-10.png"
+      ]
+    },
+    {
+      "id": "UI-13",
+      "title": "Đăng tin LOST kèm ảnh",
+      "steps": "USER điền form, chọn ảnh thật và đăng; reload chi tiết",
+      "expected": "Tin và ảnh được lưu, đọc lại sau reload",
+      "spec": "cypress/e2e/ui-items-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-items-claims.cy.js/UI-13.png"
+      ]
+    },
+    {
+      "id": "UI-14",
+      "title": "Đăng tin FOUND kèm ảnh",
+      "steps": "USER điền form, chọn ảnh thật và đăng; reload chi tiết",
+      "expected": "Tin và ảnh được lưu, đọc lại sau reload",
+      "spec": "cypress/e2e/ui-items-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-items-claims.cy.js/UI-14.png"
+      ]
+    },
+    {
+      "id": "UI-15",
+      "title": "Sửa tin và đánh dấu đã tìm thấy",
+      "steps": "Chủ tin 2 sửa tiêu đề rồi đánh dấu tìm thấy",
+      "expected": "Title mới lưu; businessStatus RESOLVED; không còn nút sửa",
+      "spec": "cypress/e2e/ui-items-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-items-claims.cy.js/UI-15.png"
+      ]
+    },
+    {
+      "id": "UI-16",
+      "title": "Upload thêm ảnh và xóa ảnh",
+      "steps": "Chủ tin upload ảnh từ trang detail rồi xóa",
+      "expected": "Ảnh xuất hiện; bấm xóa làm ảnh biến mất và API images rỗng",
+      "spec": "cypress/e2e/ui-items-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-items-claims.cy.js/UI-16.png"
+      ]
+    },
+    {
+      "id": "UI-17",
+      "title": "Gửi claim kèm ảnh và rút yêu cầu",
+      "steps": "ADMIN gửi claim từ chi tiết tin 1; mở my-claims; rút trong dialog",
+      "expected": "Claim PENDING có ảnh; rút thành WITHDRAWN",
+      "spec": "cypress/e2e/ui-items-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-items-claims.cy.js/UI-17.png"
+      ]
+    },
+    {
+      "id": "UI-18",
+      "title": "Lọc yêu cầu của tôi và hủy dialog",
+      "steps": "USER lọc đang chờ, mở rút yêu cầu rồi Hủy; lọc đã nhận",
+      "expected": "Hủy không đổi claim; tab đã nhận chỉ có claim ACCEPTED",
+      "spec": "cypress/e2e/ui-items-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-items-claims.cy.js/UI-18.png"
+      ]
+    },
+    {
+      "id": "UI-19",
+      "title": "Mobile: đăng tin và gửi claim",
+      "steps": "Viewport 390×844; tạo tin FOUND; ADMIN khác gửi bằng chứng",
+      "expected": "Tạo tin và claim thành công qua form mobile",
+      "spec": "cypress/e2e/ui-items-claims.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-items-claims.cy.js/UI-19.png"
+      ]
+    },
+    {
+      "id": "UI-20",
+      "title": "Chặn truy cập portal sai vai trò",
+      "steps": "USER vào staff; MODERATOR vào admin",
+      "expected": "Cả hai hiện không có quyền, không hiện bảng quản trị",
+      "spec": "cypress/e2e/ui-portals.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-portals.cy.js/UI-20.png"
+      ]
+    },
+    {
+      "id": "UI-21",
+      "title": "Dashboard admin",
+      "steps": "Đăng nhập, mở dashboard và chuyển khoảng thống kê",
+      "expected": "Dashboard hiển thị dữ liệu; không lỗi tải API",
+      "spec": "cypress/e2e/ui-portals.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-portals.cy.js/UI-21.png"
+      ]
+    },
+    {
+      "id": "UI-22",
+      "title": "Dashboard moderator",
+      "steps": "Đăng nhập, mở dashboard và chuyển khoảng thống kê",
+      "expected": "Dashboard hiển thị dữ liệu; không lỗi tải API",
+      "spec": "cypress/e2e/ui-portals.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-portals.cy.js/UI-22.png"
+      ]
+    },
+    {
+      "id": "UI-23",
+      "title": "Quản lý người dùng: tìm, đổi quyền và khóa",
+      "steps": "ADMIN tìm claimant, chọn hàng, lưu MODERATOR rồi khóa trong dialog",
+      "expected": "Role và status lưu trên backend; bảng cập nhật",
+      "spec": "cypress/e2e/ui-portals.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-portals.cy.js/UI-23.png"
+      ]
+    },
+    {
+      "id": "UI-24",
+      "title": "Danh mục: tạo, sửa và ẩn",
+      "steps": "ADMIN tạo danh mục; chỉnh tên và tắt hiển thị",
+      "expected": "Lưu tên mới/isActive=false; public categories không trả danh mục ẩn",
+      "spec": "cypress/e2e/ui-portals.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-portals.cy.js/UI-24.png"
+      ]
+    },
+    {
+      "id": "UI-25",
+      "title": "Nhật ký: tìm kiếm và lọc hành động",
+      "steps": "ADMIN lọc HIDE_ITEM và keyword Cypress",
+      "expected": "Một bản ghi đúng hành động; mở chi tiết được",
+      "spec": "cypress/e2e/ui-portals.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-portals.cy.js/UI-25.png"
+      ]
+    },
+    {
+      "id": "UI-26",
+      "title": "Kiểm duyệt tin chờ",
+      "steps": "MOD mở review, chọn Laptop chờ duyệt và duyệt",
+      "expected": "Tin 5 thành APPROVED và được public đọc",
+      "spec": "cypress/e2e/ui-portals.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-portals.cy.js/UI-26.png"
+      ]
+    },
+    {
+      "id": "UI-27",
+      "title": "Ẩn tin và bắt buộc nhập lý do",
+      "steps": "MOD xem tin 1, mở dialog ẩn, submit rỗng rồi nhập lý do",
+      "expected": "Validation lý do; sau xác nhận tin bị ẩn",
+      "spec": "cypress/e2e/ui-portals.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-portals.cy.js/UI-27.png"
+      ]
+    },
+    {
+      "id": "UI-28",
+      "title": "Quản lý claim: lọc và từ chối",
+      "steps": "MOD mở claims, tìm người nhận kiểm thử, chọn claim và từ chối có lý do",
+      "expected": "Claim 1 thành REJECTED; thông báo thành công",
+      "spec": "cypress/e2e/ui-portals.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-portals.cy.js/UI-28.png"
+      ]
+    },
+    {
+      "id": "UI-29",
+      "title": "Xác minh ba bước và hoàn tất bàn giao",
+      "steps": "MOD mở claim 1, thử thiếu checkbox rồi chọn đủ 3 bước và bàn giao",
+      "expected": "Validation trước; sau đó ACCEPTED/CLOSED, claim còn lại REJECTED",
+      "spec": "cypress/e2e/ui-portals.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-portals.cy.js/UI-29.png"
+      ]
+    },
+    {
+      "id": "UI-30",
+      "title": "Các alias moderator và item",
+      "steps": "MOD vào /moderator và /moderator/handover; khách mở /item/1 và /items",
+      "expected": "Alias render đúng các trang hiện có",
+      "spec": "cypress/e2e/ui-portals.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-portals.cy.js/UI-30.png"
+      ]
+    },
+    {
+      "id": "UI-31",
+      "title": "Không tự xác nhận các bước đối chiếu khi mở trang",
+      "steps": "MOD mở bàn giao một claim PENDING, chưa tick checklist",
+      "expected": "Ba checkbox ban đầu chưa chọn; cán bộ phải chủ động xác nhận",
+      "spec": "cypress/e2e/ui-portals.cy.js",
+      "state": "failed",
+      "duration": 0,
+      "error": "AssertionError: Timed out retrying after 8000ms: expected '<input.m02-card-checkbox>' not to be 'checked'\n    at Context.eval (webpack://web/./cypress/e2e/ui-portals.cy.js:93:108)\n    at Context.callback (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:121630:26)\n    at getRet (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:121395:20)\n    at tryCatcher (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:1780:23)\n    at Promise.attempt.Promise.try (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:4288:29)\n    at thenFn (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:121406:66)\n    at yieldItem (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:121638:16)\n    at tryCatcher (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:1780:23)\n    at Object.gotValue (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:6449:18)",
+      "screenshots": [
+        "screenshots/ui-portals.cy.js/UI — cổng quản trị và cán bộ -- UI-31 — Không tự xác nhận các bước đối chiếu khi mở trang (failed).png",
+        "screenshots/ui-portals.cy.js/UI-31.png"
+      ]
+    },
+    {
+      "id": "UI-01",
+      "title": "Trang chủ tải dữ liệu và điều hướng",
+      "steps": "Mở trang chủ, xem tin gần đây, mở trang tìm đồ",
+      "expected": "Có tin thật từ seed và liên kết tìm kiếm hoạt động",
+      "spec": "cypress/e2e/ui-public.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-public.cy.js/UI-01.png"
+      ]
+    },
+    {
+      "id": "UI-02",
+      "title": "Đăng nhập, giữ phiên sau reload và đăng xuất",
+      "steps": "Nhập tài khoản; đăng nhập; reload; đăng xuất",
+      "expected": "Hiển thị tên user, giữ phiên và xóa token sau logout",
+      "spec": "cypress/e2e/ui-public.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-public.cy.js/UI-02.png"
+      ]
+    },
+    {
+      "id": "UI-03",
+      "title": "Đăng nhập sai hiển thị lỗi",
+      "steps": "Nhập email đúng và mật khẩu sai",
+      "expected": "Thông báo lỗi rõ, vẫn ở /login",
+      "spec": "cypress/e2e/ui-public.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-public.cy.js/UI-03.png"
+      ]
+    },
+    {
+      "id": "UI-04",
+      "title": "Đăng ký qua giao diện",
+      "steps": "Điền họ tên, email, mật khẩu, MSSV và số điện thoại",
+      "expected": "Tạo USER, chuyển trang chủ, tên người dùng hiển thị",
+      "spec": "cypress/e2e/ui-public.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-public.cy.js/UI-04.png"
+      ]
+    },
+    {
+      "id": "UI-05",
+      "title": "Form đăng nhập bắt buộc nhập dữ liệu",
+      "steps": "Bấm submit form trống",
+      "expected": "HTML validation chặn submit; email không hợp lệ",
+      "spec": "cypress/e2e/ui-public.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-public.cy.js/UI-05.png"
+      ]
+    },
+    {
+      "id": "UI-06",
+      "title": "Tìm kiếm và lọc kết hợp",
+      "steps": "Lọc từ khóa Ví, danh mục ví, khu vực thư viện, loại FOUND",
+      "expected": "Chỉ một tin ví; bấm mở đúng chi tiết",
+      "spec": "cypress/e2e/ui-public.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-public.cy.js/UI-06.png"
+      ]
+    },
+    {
+      "id": "UI-07",
+      "title": "Không có kết quả và xóa bộ lọc",
+      "steps": "Tìm từ khóa không tồn tại rồi Xóa lọc",
+      "expected": "Có trạng thái rỗng, sau reset hiển thị 3 tin",
+      "spec": "cypress/e2e/ui-public.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-public.cy.js/UI-07.png"
+      ]
+    },
+    {
+      "id": "UI-08",
+      "title": "Lọc tin của tôi",
+      "steps": "USER mở search, chọn Chỉ xem tin của tôi",
+      "expected": "Có hai tin của user gồm tin ẩn",
+      "spec": "cypress/e2e/ui-public.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-public.cy.js/UI-08.png"
+      ]
+    },
+    {
+      "id": "UI-09",
+      "title": "Chi tiết tin không tồn tại và đường dẫn lạ",
+      "steps": "Mở /items/99999 rồi đường dẫn không có route",
+      "expected": "Thông báo lỗi chi tiết; route lạ về trang chủ",
+      "spec": "cypress/e2e/ui-public.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-public.cy.js/UI-09-not-found.png",
+        "screenshots/ui-public.cy.js/UI-09.png"
+      ]
+    },
+    {
+      "id": "UI-10",
+      "title": "Khách bị chặn các trang cần đăng nhập",
+      "steps": "Mở đăng tin, my-claims và admin",
+      "expected": "Mỗi trang có hướng dẫn đăng nhập",
+      "spec": "cypress/e2e/ui-public.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-public.cy.js/UI-10.png"
+      ]
+    },
+    {
+      "id": "UI-11",
+      "title": "Lỗi API được hiển thị trên trang tìm đồ",
+      "steps": "Giả lập duy nhất GET items trả 503",
+      "expected": "Hiển thị thông báo lỗi, không render dữ liệu giả",
+      "spec": "cypress/e2e/ui-public.cy.js",
+      "state": "passed",
+      "duration": 0,
+      "error": "",
+      "screenshots": [
+        "screenshots/ui-public.cy.js/UI-11.png"
+      ]
+    },
+    {
+      "id": "UI-12",
+      "title": "Mobile: đăng nhập, tìm và mở chi tiết",
+      "steps": "Viewport 390×844; đăng nhập; tìm Ví; mở chi tiết",
+      "expected": "Form và kết quả dùng được; không tràn ngang",
+      "spec": "cypress/e2e/ui-public.cy.js",
+      "state": "failed",
+      "duration": 0,
+      "error": "AssertionError: expected 774 to be at most 390\n    at Context.eval (webpack://web/./cypress/e2e/ui-public.cy.js:79:79)\n    at getRet (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:121395:20)\n    at tryCatcher (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:1780:23)\n    at Promise.attempt.Promise.try (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:4288:29)\n    at Context.thenFn (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:121406:66)\n    at Context.then (http://127.0.0.1:5173/__cypress/runner/cypress_runner.js:121657:21)",
+      "screenshots": [
+        "screenshots/ui-public.cy.js/UI — trang công khai, xác thực và tìm kiếm -- UI-12 — Mobile đăng nhập, tìm và mở chi tiết (failed).png",
+        "screenshots/ui-public.cy.js/UI-12.png"
+      ]
+    }
+  ]
+}

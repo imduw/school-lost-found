@@ -61,3 +61,7 @@ lerna-debug.log*
 # ==========================================
 uploads/
 !uploads/.gitkeep
+
+# Cypress runtime artifacts (report screenshots under docs/ are retained)
+apps/web/cypress/downloads/
+apps/web/cypress/videos/

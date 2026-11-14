@@ -1,0 +1,81 @@
+import { testCase as tc } from '../support/cases'
+
+describe('UI — trang công khai, xác thực và tìm kiếm', () => {
+  tc('UI-01', 'Trang chủ tải dữ liệu và điều hướng', 'Mở trang chủ, xem tin gần đây, mở trang tìm đồ', 'Có tin thật từ seed và liên kết tìm kiếm hoạt động', () => {
+    cy.visit('/')
+    cy.contains('Ví da kiểm thử').should('be.visible')
+    cy.get('header a[href="/search"]').first().click()
+    cy.location('pathname').should('eq', '/search')
+    cy.contains('h1', 'Tìm đồ thất lạc').should('be.visible')
+  })
+  tc('UI-02', 'Đăng nhập, giữ phiên sau reload và đăng xuất', 'Nhập tài khoản; đăng nhập; reload; đăng xuất', 'Hiển thị tên user, giữ phiên và xóa token sau logout', () => {
+    cy.visit('/login')
+    cy.get('input[type=email]').type('claimant@slf.test')
+    cy.get('input[type=password]').type('Test@123456', { log: false })
+    cy.get('button[type=submit]').click()
+    cy.location('pathname').should('eq', '/')
+    cy.get('header').should('contain', 'Người nhận kiểm thử')
+    cy.reload(); cy.get('header').should('contain', 'Người nhận kiểm thử')
+    cy.contains('button', 'Đăng xuất').click()
+    cy.window().should(win => expect(win.localStorage.getItem('slf_access_token')).to.eq(null))
+    cy.get('header').should('contain', 'Đăng nhập')
+  })
+  tc('UI-03', 'Đăng nhập sai hiển thị lỗi', 'Nhập email đúng và mật khẩu sai', 'Thông báo lỗi rõ, vẫn ở /login', () => {
+    cy.visit('/login'); cy.get('input[type=email]').type('claimant@slf.test')
+    cy.get('input[type=password]').type('wrong123', { log: false }); cy.get('button[type=submit]').click()
+    cy.contains('Email hoặc mật khẩu không chính xác').should('be.visible'); cy.location('pathname').should('eq', '/login')
+  })
+  tc('UI-04', 'Đăng ký qua giao diện', 'Điền họ tên, email, mật khẩu, MSSV và số điện thoại', 'Tạo USER, chuyển trang chủ, tên người dùng hiển thị', () => {
+    cy.visit('/register')
+    cy.field('Họ và tên').type('Sinh viên Cypress')
+    cy.get('input[type=email]').type('ui-new@slf.test'); cy.get('input[type=password]').type('Test@123456', { log: false })
+    cy.field('Mã sinh viên').type('TESTNEW'); cy.field('Số điện thoại').type('0000000000')
+    cy.get('button[type=submit]').click(); cy.location('pathname').should('eq', '/')
+    cy.get('header').should('contain', 'Sinh viên Cypress')
+  })
+  tc('UI-05', 'Form đăng nhập bắt buộc nhập dữ liệu', 'Bấm submit form trống', 'HTML validation chặn submit; email không hợp lệ', () => {
+    cy.visit('/login'); cy.get('button[type=submit]').click()
+    cy.get('input[type=email]').then(input => expect(input[0].validity.valueMissing).to.eq(true))
+    cy.location('pathname').should('eq', '/login')
+  })
+  tc('UI-06', 'Tìm kiếm và lọc kết hợp', 'Lọc từ khóa Ví, danh mục ví, khu vực thư viện, loại FOUND', 'Chỉ một tin ví; bấm mở đúng chi tiết', () => {
+    cy.visit('/search'); cy.field('Từ khóa').type('Ví'); cy.field('Danh mục').select('1')
+    cy.field('Khu vực').type('Thư viện'); cy.contains('button', 'Nhặt được').click()
+    cy.get('.p02-cards-grid .p02-card-item-title').should('have.length', 1).and('contain', 'Ví da kiểm thử')
+    cy.contains('.p02-card-item-title', 'Ví da kiểm thử').click()
+    cy.location('pathname').should('eq', '/items/1'); cy.contains('h1', 'Ví da kiểm thử').should('be.visible')
+  })
+  tc('UI-07', 'Không có kết quả và xóa bộ lọc', 'Tìm từ khóa không tồn tại rồi Xóa lọc', 'Có trạng thái rỗng, sau reset hiển thị 3 tin', () => {
+    cy.visit('/search'); cy.field('Từ khóa').type('zzzz-nothing')
+    cy.contains('Không tìm thấy tin đăng nào phù hợp').should('be.visible')
+    cy.contains('button', 'Xóa lọc').click(); cy.get('.p02-card-item-title').should('have.length', 3)
+  })
+  tc('UI-08', 'Lọc tin của tôi', 'USER mở search, chọn Chỉ xem tin của tôi', 'Có hai tin của user gồm tin ẩn', () => {
+    cy.loginAs('claimant', '/search')
+    cy.contains('label', 'Chỉ xem tin của tôi').find('input').check()
+    cy.get('.p02-card-item-title').should('have.length', 2)
+    cy.contains('Bình nước tin ẩn').should('be.visible')
+  })
+  tc('UI-09', 'Chi tiết tin không tồn tại và đường dẫn lạ', 'Mở /items/99999 rồi đường dẫn không có route', 'Thông báo lỗi chi tiết; route lạ về trang chủ', () => {
+    cy.visit('/items/99999'); cy.contains('Không thể hiển thị tin đăng').should('be.visible')
+    cy.screenshot('UI-09-not-found')
+    cy.visit('/unknown-route'); cy.location('pathname').should('eq', '/'); cy.contains('Ví da kiểm thử').should('be.visible')
+  })
+  tc('UI-10', 'Khách bị chặn các trang cần đăng nhập', 'Mở đăng tin, my-claims và admin', 'Mỗi trang có hướng dẫn đăng nhập', () => {
+    cy.visit('/items/new'); cy.contains('Bạn cần đăng nhập để đăng tin').should('be.visible')
+    cy.visit('/my-claims'); cy.contains('Vui lòng đăng nhập để xem').should('be.visible')
+    cy.visit('/admin'); cy.contains('Vui lòng đăng nhập để tiếp tục').should('be.visible')
+  })
+  tc('UI-11', 'Lỗi API được hiển thị trên trang tìm đồ', 'Giả lập duy nhất GET items trả 503', 'Hiển thị thông báo lỗi, không render dữ liệu giả', () => {
+    cy.intercept('GET', '/api/v1/items*', { statusCode: 503, body: { success: false, error: { code: 'TEST_UNAVAILABLE', message: 'Máy chủ kiểm thử tạm ngừng' } } })
+    cy.visit('/search'); cy.contains('Máy chủ kiểm thử tạm ngừng').should('be.visible'); cy.get('.p02-card-item-title').should('not.exist')
+  })
+  tc('UI-12', 'Mobile: đăng nhập, tìm và mở chi tiết', 'Viewport 390×844; đăng nhập; tìm Ví; mở chi tiết', 'Form và kết quả dùng được; không tràn ngang', () => {
+    cy.viewport(390, 844); cy.visit('/login')
+    cy.get('input[type=email]').type('claimant@slf.test'); cy.get('input[type=password]').type('Test@123456', { log: false })
+    cy.get('button[type=submit]').click(); cy.location('pathname').should('eq', '/')
+    cy.visit('/search'); cy.field('Từ khóa').type('Ví'); cy.contains('.p02-card-item-title', 'Ví da kiểm thử').click()
+    cy.contains('h1', 'Ví da kiểm thử').should('be.visible')
+    cy.document().then(doc => expect(doc.documentElement.scrollWidth).to.be.at.most(390))
+  })
+})

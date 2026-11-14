@@ -1,0 +1,95 @@
+import { testCase as tc } from '../support/cases'
+
+describe('UI — cổng quản trị và cán bộ', () => {
+  tc('UI-20', 'Chặn truy cập portal sai vai trò', 'USER vào staff; MODERATOR vào admin', 'Cả hai hiện không có quyền, không hiện bảng quản trị', () => {
+    cy.loginAs('claimant', '/staff'); cy.contains('Bạn không có quyền truy cập khu vực này').should('be.visible')
+    cy.loginAs('moderator', '/admin/users'); cy.contains('Bạn không có quyền truy cập khu vực này').should('be.visible')
+  })
+  for (const [id, account, route] of [['21', 'admin', '/admin'], ['22', 'moderator', '/staff']]) {
+    tc(`UI-${id}`, `Dashboard ${account}`, 'Đăng nhập, mở dashboard và chuyển khoảng thống kê', 'Dashboard hiển thị dữ liệu; không lỗi tải API', () => {
+      cy.intercept('GET', '/api/v1/admin/stats').as('stats')
+      cy.loginAs(account, route); cy.wait('@stats').its('response.statusCode').should('be.oneOf', [200, 304])
+      cy.get('h1').should('be.visible'); cy.get('.a01-stat-value').should('have.length.greaterThan', 0)
+      cy.get('select').first().then(select => {
+        if (select[0].options.length > 1) cy.wrap(select).select(select[0].options[1].value)
+      })
+    })
+  }
+  tc('UI-23', 'Quản lý người dùng: tìm, đổi quyền và khóa', 'ADMIN tìm claimant, chọn hàng, lưu MODERATOR rồi khóa trong dialog', 'Role và status lưu trên backend; bảng cập nhật', () => {
+    cy.loginAs('admin', '/admin/users')
+    cy.get('input[aria-label="Tìm kiếm tài khoản"]').type('claimant')
+    cy.contains('tr', 'claimant@slf.test').click()
+    cy.get('#admin-user-role-select').select('MODERATOR'); cy.contains('button', 'Lưu vai trò').click()
+    cy.contains('[role=status]', 'MODERATOR').should('be.visible')
+    cy.contains('button', 'Khóa tài khoản').click(); cy.get('dialog[open]').contains('button', 'Khóa').click()
+    cy.api('GET', '/admin/users?keyword=claimant', undefined, 'admin').then(r => {
+      expect(r.body.data[0].role).to.eq('MODERATOR'); expect(r.body.data[0].status).to.eq('SUSPENDED')
+    })
+  })
+  tc('UI-24', 'Danh mục: tạo, sửa và ẩn', 'ADMIN tạo danh mục; chỉnh tên và tắt hiển thị', 'Lưu tên mới/isActive=false; public categories không trả danh mục ẩn', () => {
+    cy.loginAs('admin', '/admin/categories')
+    cy.get('tbody tr').should('have.length', 5)
+    cy.get('#cat-name-input').should('have.value', 'Ví tiền & Bóp')
+    cy.contains('button', 'Thêm danh mục').click()
+    cy.get('#cat-name-input').should('have.value', '')
+    cy.get('#cat-name-input').type('Danh mục UI Cypress'); cy.get('#cat-desc-input').type('Mô tả kiểm thử')
+    cy.contains('button', 'Tạo danh mục').click()
+    cy.contains('tr', 'Danh mục UI Cypress').click()
+    cy.get('#cat-name-input').clear().type('Danh mục UI đã sửa')
+    cy.get('[role=switch]').click(); cy.contains('button', 'Lưu thay đổi').click()
+    cy.contains('tr', 'Danh mục UI đã sửa').should('exist')
+    cy.api('GET', '/categories').then(r => expect(r.body.data.map(c => c.name)).not.to.include('Danh mục UI đã sửa'))
+  })
+  tc('UI-25', 'Nhật ký: tìm kiếm và lọc hành động', 'ADMIN lọc HIDE_ITEM và keyword Cypress', 'Một bản ghi đúng hành động; mở chi tiết được', () => {
+    cy.loginAs('admin', '/admin/audit')
+    cy.get('select[aria-label="Lọc theo hành động"]').select('HIDE_ITEM')
+    cy.get('input[aria-label="Tìm kiếm nhật ký hoạt động"]').type('Cypress')
+    cy.get('tbody tr').should('have.length', 1).click()
+    cy.contains('Dữ liệu kiểm thử Cypress').should('be.visible')
+  })
+  tc('UI-26', 'Kiểm duyệt tin chờ', 'MOD mở review, chọn Laptop chờ duyệt và duyệt', 'Tin 5 thành APPROVED và được public đọc', () => {
+    cy.loginAs('moderator', '/staff/review')
+    cy.contains('Laptop chờ duyệt').first().click()
+    cy.contains('button', /Duyệt|Hiển thị lại/).click()
+    cy.contains('[role=status]', 'Đã duyệt').should('be.visible')
+    cy.api('GET', '/items/5').then(r => expect(r.body.data.publicationStatus).to.eq('APPROVED'))
+  })
+  tc('UI-27', 'Ẩn tin và bắt buộc nhập lý do', 'MOD xem tin 1, mở dialog ẩn, submit rỗng rồi nhập lý do', 'Validation lý do; sau xác nhận tin bị ẩn', () => {
+    cy.loginAs('moderator', '/items/1'); cy.contains('button', 'Ẩn tin').click()
+    cy.get('dialog[open]').contains('button', /Ẩn|Xác nhận/).click()
+    cy.get('dialog[open] [role=alert]').should('contain', 'Vui lòng nhập lý do')
+    cy.get('dialog[open] textarea').type('Lý do ẩn Cypress')
+    cy.get('dialog[open]').contains('button', /Ẩn|Xác nhận/).click(); cy.get('dialog[open]').should('not.exist')
+    cy.api('GET', '/items/1').its('status').should('eq', 403)
+  })
+  tc('UI-28', 'Quản lý claim: lọc và từ chối', 'MOD mở claims, tìm người nhận kiểm thử, chọn claim và từ chối có lý do', 'Claim 1 thành REJECTED; thông báo thành công', () => {
+    cy.loginAs('moderator', '/staff/claims')
+    cy.get('input[aria-label="Tìm kiếm yêu cầu nhận đồ"]').type('Người nhận kiểm thử')
+    cy.contains('.m03-claim-card', 'CLM-1').click()
+    cy.contains('button', 'Từ chối yêu cầu').click()
+    cy.get('dialog[open] textarea').type('Bằng chứng chưa khớp Cypress')
+    cy.get('dialog[open]').contains('button', /Từ chối|Xác nhận/).click()
+    cy.contains('[role=status]', 'Đã từ chối').should('be.visible')
+    cy.api('GET', '/claims/1', undefined, 'moderator').then(r => expect(r.body.data.status).to.eq('REJECTED'))
+  })
+  tc('UI-29', 'Xác minh ba bước và hoàn tất bàn giao', 'MOD mở claim 1, thử thiếu checkbox rồi chọn đủ 3 bước và bàn giao', 'Validation trước; sau đó ACCEPTED/CLOSED, claim còn lại REJECTED', () => {
+    cy.loginAs('moderator', '/staff/handover?claimId=1')
+    cy.get('.m04-checklist-box input[type=checkbox]').uncheck()
+    cy.contains('button', 'Xác nhận bàn giao').click(); cy.contains('Vui lòng kiểm tra và đánh dấu đủ 3 bước').should('be.visible')
+    cy.get('.m04-checklist-box input[type=checkbox]').check()
+    cy.get('#handover-note-input').clear().type('Bàn giao UI Cypress')
+    cy.contains('button', 'Xác nhận bàn giao').click()
+    cy.contains('Đã hoàn tất bàn giao #CLM-1').should('be.visible')
+    cy.api('GET', '/claims/2', undefined, 'moderator').then(r => expect(r.body.data.status).to.eq('REJECTED'))
+  })
+  tc('UI-30', 'Các alias moderator và item', 'MOD vào /moderator và /moderator/handover; khách mở /item/1 và /items', 'Alias render đúng các trang hiện có', () => {
+    cy.loginAs('moderator', '/moderator'); cy.get('h1').should('be.visible')
+    cy.visit('/moderator/handover?claimId=1'); cy.get('#handover-at-input').should('exist')
+    cy.visit('/item/1'); cy.contains('h1', 'Ví da kiểm thử').should('be.visible')
+    cy.visit('/items'); cy.contains('h1', 'Tìm đồ thất lạc').should('be.visible')
+  })
+  tc('UI-31', 'Không tự xác nhận các bước đối chiếu khi mở trang', 'MOD mở bàn giao một claim PENDING, chưa tick checklist', 'Ba checkbox ban đầu chưa chọn; cán bộ phải chủ động xác nhận', () => {
+    cy.loginAs('moderator', '/staff/handover?claimId=1')
+    cy.get('.m04-checklist-box input[type=checkbox]').should('have.length', 3).each(input => cy.wrap(input).should('not.be.checked'))
+  })
+})

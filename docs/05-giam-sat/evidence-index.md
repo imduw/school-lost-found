@@ -30,7 +30,7 @@ v0.3, cập nhật 02/11/2026 theo hạn trước 16/11. Owner: TV5; mỗi thàn
 | EV09 | Risk Update #2, diễn biến so với lần trước và BC3/matrix | TV5 | Sáng 15/11; chốt trước 12:00 | Chưa có; risk log và phiên bản trước/sau |
 | EV10 | Scope change thực tế được xử lý | TV1 | Khi thực sự phát sinh | Đã ghi tiếp nhận thông báo/hạn mới trong change log; chưa có bằng chứng nhóm phê duyệt thay đổi baseline sau khi khóa |
 | EV11 | AI trong quản trị, kiểm chứng đầu ra | Người sử dụng + TV5 | Trong quá trình | Cuộc trao đổi này là nguồn thực tế có thể lưu; chưa có log được nhóm xác nhận |
-| EV12 | Test/UAT và phản hồi từ người dùng thật | TV5 | 13–14/11 | Chưa có; test report, bug, phản hồi |
+| EV12 | Test/UAT và phản hồi từ người dùng thật | TV5 | 13–14/11 | Có [báo cáo Cypress local](cypress/bao-cao-test-case.md), [screenshot](cypress/danh-sach-screenshot.md) và [lỗi phát hiện](cypress/loi-phat-hien.md) ngày 14/11; chưa có UAT/phản hồi người dùng thật |
 | EV13 | Acceptance và final retrospective | TV1 | 14–15/11 | Chưa có; phản hồi/điều kiện nghiệm thu, biên bản |
 | EV14 | Release, bản nộp, runbook, video/demo và evidence package | TV2 + TV1 | Bản UAT 13/11; bộ nộp 15/11 | Chưa có; link/commit và quyền truy cập |
 
@@ -63,3 +63,11 @@ Không ghi “AI giúp nhóm tăng năng suất X%” nếu chưa đo. Không gh
 - [ ] AI evidence có đầu vào/đầu ra/kiểm chứng của nhóm.
 - [ ] Có acceptance từ stakeholder thật, hoặc ghi rõ phần chưa được chấp nhận.
 - [ ] Link, file và quyền truy cập đã được người khác thử mở.
+
+## 6. Bằng chứng kiểm thử bổ sung ngày 14/11/2026
+
+Codex thực thi Cypress theo yêu cầu của người dùng, dùng Chrome headless, frontend React/Vite, backend Express thật và PostgreSQL 16 tách biệt trong Docker. [Báo cáo](cypress/bao-cao-test-case.md) ghi thời điểm UTC+7, commit, từng ca, kỳ vọng, kết quả và ảnh; [JSON](cypress/results.json) lưu số liệu máy đọc được. [Hướng dẫn](../../apps/web/cypress/README.md) cho phép tạo lại môi trường và chạy lại bộ test.
+
+Đã chạy `npm --prefix apps/web run lint` và `npm --prefix apps/web run build`. Build thành công, có cảnh báo chunk JavaScript lớn hơn 500 kB. Máy thực thi dùng Node v20.20.2; npm cảnh báo React Router yêu cầu Node >=22.22.0, vì vậy hướng dẫn chạy lại khuyến nghị Node 22.22+. Đây là giới hạn môi trường cần đối chiếu khi tái lập.
+
+Kết quả local không thay bằng chứng Supabase/HTTPS triển khai, CI trên máy thứ hai, UAT, review TV3 hoặc nghiệm thu stakeholder. Các lỗi sản phẩm còn mở được giữ ở trạng thái FAIL; chưa sửa mã nghiệp vụ trong đợt này.
